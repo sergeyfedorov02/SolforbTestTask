@@ -23,17 +23,31 @@
         </RadzenRow>
     </RadzenBody>
     <RadzenSidebar @bind-Expanded="@sidebarExpanded" style="z-index: 2">
-        <RadzenStack AlignItems="Radzen.AlignItems.Center" class="rz-py-4 rz-py-lg-6" Style="padding: var(--rz-panel-menu-item-padding); border-bottom: var(--rz-panel-menu-item-border);">
-            <RadzenImage Path="images/logo.png"  style="width: 48px; height: 48px;" AlternateText="Application logo"></RadzenImage>
-            <RadzenText Text="SolvoTestTask" TextStyle="Radzen.Blazor.TextStyle.Subtitle1" class="rz-mb-0" style="color: var(--rz-sidebar-color);" />
-        </RadzenStack>
         <RadzenPanelMenu>
-            <RadzenPanelMenuItem Text="Home" Path="" />
-            <RadzenPanelMenuItem Text="Баланс" Path="balances" />
+            <!-- Управление складом -->
+            <RadzenStack JustifyContent="JustifyContent.Center" class="rz-px-3 rz-py-3">
+                <RadzenButton Click="@(() => NavigationManager.NavigateTo("balances"))" 
+                    Text="Управление складом" Style="font-size: 1.25rem; font-weight: 600; text-align: center;" Path="balances" class="rz-pl-4">
+                </RadzenButton>
+                
+            </RadzenStack>
+
+            <!-- Склад -->
+            <RadzenText Text="Склад" class="rz-px-3 rz-pt-2" Style="font-size: 1.5rem; font-weight: 600;" />
+            <RadzenPanelMenu Style="background-color: transparent; box-shadow: none;">
+                <RadzenPanelMenuItem Text="Баланс" Path="balances" class="rz-pl-4" />
+                <RadzenPanelMenuItem Text="Поступления" Path="receipts" class="rz-pl-4"   />
+                <RadzenPanelMenuItem Text="Отгрузки" Path="shipments" class="rz-pl-4" />
+            </RadzenPanelMenu>
+
+            <!-- Справочники -->
+            <RadzenText Text="Справочники" class="rz-px-3 rz-pt-2" Style="font-size: 1.5rem; font-weight: 600;" />
+            <RadzenPanelMenu Style="background-color: transparent; box-shadow: none;">
+                <RadzenPanelMenuItem Text="Клиенты" Path="clients/works" class="rz-pl-4" />
+                <RadzenPanelMenuItem Text="Единицы измерения" Path="measurements/works" class="rz-pl-4" />
+                <RadzenPanelMenuItem Text="Ресурсы" Path="resources/works" class="rz-pl-4" />
+            </RadzenPanelMenu>
+
         </RadzenPanelMenu>
-        <RadzenStack AlignItems="Radzen.AlignItems.Center" Gap="0" class="rz-py-4 rz-py-lg-6" Style="padding: var(--rz-panel-menu-item-padding);">
-            <RadzenText Text="SolvoTestTask v1.0.0" TextStyle="Radzen.Blazor.TextStyle.Caption" TagName="Radzen.Blazor.TagName.P" TextAlign="Radzen.TextAlign.Center" />
-            <RadzenText Text="Copyright Ⓒ 2025" TextStyle="Radzen.Blazor.TextStyle.Caption" class="rz-mb-0" TagName="Radzen.Blazor.TagName.P" TextAlign="Radzen.TextAlign.Center" />
-        </RadzenStack>
     </RadzenSidebar>
 </RadzenLayout>

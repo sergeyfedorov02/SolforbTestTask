@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SolvoTestTask.Server.Models.Entities
+namespace SolforbTestTask.Server.Models.Entities
 {
     public class ShipmentsDocument
     {

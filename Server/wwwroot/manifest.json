@@ -1,6 +1,6 @@
 {
-  "name": "SolvoTestTask",
-  "short_name": "SolvoTestTask",
+  "name": "SolforbTestTask",
+  "short_name": "SolforbTestTask",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

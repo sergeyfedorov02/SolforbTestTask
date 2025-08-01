@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Radzen;
-using SolvoTestTask.Server.Components;
-using SolvoTestTask.Server.Data;
+using SolforbTestTask.Server.Data;
+using SolforbTestTask.Server.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,19 +14,19 @@ builder.Services.AddRadzenComponents();
 
 builder.Services.AddRadzenCookieThemeService(options =>
 {
-    options.Name = "SolvoTestTaskTheme";
+    options.Name = "SolforbTestTaskTheme";
     options.Duration = TimeSpan.FromDays(365);
 });
 builder.Services.AddHttpClient();
 
 // настраиваем провайдера дл€ Ѕƒ (PostgreSQL)
-builder.Services.AddDbContext<SolvoDBContext>(options =>
+builder.Services.AddDbContext<SolforbDBContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("SolvoConnection"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("SolforbConnection"));
 });
 
-builder.Services.AddTransient<Func<SolvoDBContext>>(provider =>
-   () => provider.CreateScope().ServiceProvider.GetRequiredService<SolvoDBContext>());
+builder.Services.AddTransient<Func<SolforbDBContext>>(provider =>
+   () => provider.CreateScope().ServiceProvider.GetRequiredService<SolforbDBContext>());
 
 var app = builder.Build();
 
@@ -60,10 +60,10 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
    .AddInteractiveWebAssemblyRenderMode()
-   .AddAdditionalAssemblies(typeof(SolvoTestTask.Client._Imports).Assembly);
+   .AddAdditionalAssemblies(typeof(SolforbTestTask.Client._Imports).Assembly);
 
 // убеждаемс€, что база создана (если нет -> создаем)
-var db = app.Services.CreateScope().ServiceProvider.GetRequiredService<SolvoDBContext>();
+var db = app.Services.CreateScope().ServiceProvider.GetRequiredService<SolforbDBContext>();
 
 db.Database.SetCommandTimeout(60);
 db.Database.EnsureCreated();

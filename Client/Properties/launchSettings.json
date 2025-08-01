@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "SolvoTestTask.Client": {
+    "SolforbTestTask.Client": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

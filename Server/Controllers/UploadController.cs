@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 
-namespace SolvoTestTask.Server.Controllers
+namespace SolforbTestTask.Server.Controllers
 {
     public partial class UploadController : Controller
     {

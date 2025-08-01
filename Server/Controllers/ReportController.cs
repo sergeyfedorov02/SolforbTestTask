@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SolvoTestTask.Server.Controllers
+namespace SolforbTestTask.Server.Controllers
 {
     public partial class ReportController : Controller
     {

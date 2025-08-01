@@ -10,7 +10,7 @@ using Microsoft.JSInterop;
 using Radzen;
 using Radzen.Blazor;
 
-namespace SolvoTestTask.Client.Layout
+namespace SolforbTestTask.Client.Layout
 {
     public partial class MainLayout
     {

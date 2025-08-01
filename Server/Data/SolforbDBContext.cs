@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace SolvoTestTask.Server.Data
+namespace SolforbTestTask.Server.Data
 {
-    public class SolvoDBContext : DbContext
+    public class SolforbDBContext : DbContext
     {
-        public SolvoDBContext()
+        public SolforbDBContext()
         {
         }
 
@@ -12,7 +12,7 @@ namespace SolvoTestTask.Server.Data
         //public virtual DbSet<DataCSV> DataCSV { get; set; }
         //public virtual DbSet<Result> Results { get; set; }
 
-        public SolvoDBContext(DbContextOptions<SolvoDBContext> options) : base(options)
+        public SolforbDBContext(DbContextOptions<SolforbDBContext> options) : base(options)
         {
         }
     }

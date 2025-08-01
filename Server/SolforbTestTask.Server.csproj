@@ -16,7 +16,7 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="Radzen.Blazor" Version="*" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.*-*" />
-    <ProjectReference Include="..\Client\SolvoTestTask.Client.csproj" />
+    <ProjectReference Include="..\Client\SolforbTestTask.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>

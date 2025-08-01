@@ -1,12 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SolvoTestTask.Server.Models.Entities
+namespace SolforbTestTask.Server.Models.Entities
 {
-    public class IncomesDocument
+    public class ReceiptsResource
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public int Number { get; set; }
+        public long ClientId { get; set; }
+        [ForeignKey("ClientId")]
         public DateTime Date { get; set; }
+        public bool IsArchived { get; set; }
     }
 }

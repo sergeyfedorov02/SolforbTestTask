@@ -10,7 +10,7 @@ using Microsoft.JSInterop;
 using Radzen;
 using Radzen.Blazor;
 
-namespace SolvoTestTask.Client.Pages
+namespace SolforbTestTask.Client.Pages
 {
     public partial class Index
     {

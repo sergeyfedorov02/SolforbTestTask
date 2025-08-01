@@ -28,7 +28,4 @@
   <ItemGroup>
     <ServiceWorker Include="../Server/wwwroot/service-worker.js" PublishedContent="../Server/wwwroot/service-worker.published.js" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Pages\Directory\" />
-  </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace SolvoTestTask.Server.Services
+﻿namespace SolforbTestTask.Server.Services
 {
     public interface IBalanceService
     {
