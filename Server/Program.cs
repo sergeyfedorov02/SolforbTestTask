@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Radzen;
-using SolforbTestTask.Server.Data;
 using SolforbTestTask.Server.Components;
+using SolforbTestTask.Server.Data;
+using SolforbTestTask.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,9 @@ builder.Services.AddRadzenCookieThemeService(options =>
     options.Name = "SolforbTestTaskTheme";
     options.Duration = TimeSpan.FromDays(365);
 });
-builder.Services.AddHttpClient();
+//builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<IStorageService, StorageService>();
 
 // настраиваем провайдера для БД (PostgreSQL)
 builder.Services.AddDbContext<SolforbDBContext>(options =>

@@ -1,7 +1,44 @@
 ﻿@page "/"
 @page "/balances"
-<h3>Balances</h3>
 
-@code {
+@using SolforbTestTask.Client.Services
+@using SolforbTestTask.Client.Extensions
+@using DataContracts
 
-}
+@inject IBalanceService BalanceService
+
+<PageTitle>Баланс</PageTitle>
+
+<RadzenStack Gap="1rem">
+      <LocalizedDataGrid @ref=@grid
+                             Data="@balances" Count="@count" TItem="BalanceDto" LoadData="@LoadData"
+                             ColumnWidth="140px"
+                             PagerAlwaysVisible="true"
+                             LogicalFilterOperator="LogicalFilterOperator.And"
+                             IsLoading="@isLoading"
+                             AllowMultiColumnSorting="false"
+                             PageSizeOptions="@pageSizeOptions"
+                             ShowPagingSummary="true"
+                             AllowFiltering="true" AllowSorting="true" AllowColumnResize="true"
+                             AllowGrouping="true"
+                             AllowColumnPicking="true"
+                             AllowColumnReorder="true"
+                             FilterMode="FilterMode.Advanced"
+                             FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                             AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" PageSize="@pageSize">
+        <HeaderTemplate>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem;" Wrap="FlexWrap.Wrap">
+                <RadzenButton Icon="refresh" Click="@(_ => grid.Reload())" MouseEnter="@(args => ShowTooltip(args, "Обновить данные"))" />
+                <RadzenButton Icon="filter_alt_off" Click="@ResetFiltersAsync" MouseEnter="@(args => ShowTooltip(args, "Cбросить фильтры"))" />
+            </RadzenStack>
+        </HeaderTemplate>
+        <PagingSummaryTemplate>
+            Страница @context.CurrentPage из @context.NumberOfPages <b>(Всего @context.TotalCount записей)</b>
+        </PagingSummaryTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="Balances" Property="Resource.Name" Title="Ресурс" />
+            <RadzenDataGridColumn TItem="Balances" Property="Measurement.Name" Title="Единица измерения" />
+            <RadzenDataGridColumn TItem="Balances" Property="Count" Title="Количество" />
+        </Columns>
+    </LocalizedDataGrid> 
+</RadzenStack>

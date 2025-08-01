@@ -16,11 +16,15 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="Radzen.Blazor" Version="*" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.*-*" />
-    <ProjectReference Include="..\Client\SolforbTestTask.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
     <Folder Include="Models\DataTransferObject\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Client\SolforbTestTask.Client.csproj" />
+    <ProjectReference Include="..\DataContracts\DataContracts.csproj" />
   </ItemGroup>
 </Project>

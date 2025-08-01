@@ -15,6 +15,9 @@
     <PackageReference Include="Radzen.Blazor" Version="*" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataContracts\DataContracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <ServiceWorker Include="../Server/wwwroot/service-worker.js" PublishedContent="../Server/wwwroot/service-worker.published.js" />
   </ItemGroup>
 </Project>
