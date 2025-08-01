@@ -13,17 +13,6 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.*-*" />
     <PackageReference Include="System.Net.Http.Json" Version="9.*-*" />
     <PackageReference Include="Radzen.Blazor" Version="*" />
-    <Compile Include="../Server/Models/**/*.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="..\Server\Models\Entities\Balance.cs" />
-    <Compile Remove="..\Server\Models\Entities\Client.cs" />
-    <Compile Remove="..\Server\Models\Entities\IncomesDocument.cs" />
-    <Compile Remove="..\Server\Models\Entities\IncomesResource.cs" />
-    <Compile Remove="..\Server\Models\Entities\Measurement.cs" />
-    <Compile Remove="..\Server\Models\Entities\Resource.cs" />
-    <Compile Remove="..\Server\Models\Entities\ShipmentsDocument.cs" />
-    <Compile Remove="..\Server\Models\Entities\ShipmentsResource.cs" />
   </ItemGroup>
   <ItemGroup>
     <ServiceWorker Include="../Server/wwwroot/service-worker.js" PublishedContent="../Server/wwwroot/service-worker.published.js" />
