@@ -7,8 +7,11 @@ namespace SolforbTestTask.Server.Models.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public int Number { get; set; }
+
         public long ClientId { get; set; }
         [ForeignKey("ClientId")]
+        public Client Client { get; set; }
+
         public DateTime Date { get; set; }
         public bool IsArchived { get; set; }
     }

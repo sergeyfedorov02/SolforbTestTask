@@ -36,11 +36,11 @@ namespace SolforbTestTask.Server.Services
                 {
                     Data = [.. result.Value.Select(v => new BalanceDto
                     {
-                        Measurement = new MeasurementInBalanceDto
+                        Measurement = new MeasurementInStorageDto
                         {
                             Name = v.Measurement.Name,
                         },
-                        Resource = new ResourceInBalanceDto 
+                        Resource = new ResourceInStorageDto 
                         {
                             Name = v.Resource.Name,
                         },
@@ -52,6 +52,44 @@ namespace SolforbTestTask.Server.Services
             catch (Exception ex)
             {
                 return DataResultDto<GridResultDto<BalanceDto>>.CreateFromException(ex);
+            }
+        }
+
+        public async Task<DataResultDto<GridResultDto<ReceiptDto>>> GetReceiptAsync(Query query)
+        {
+            try
+            {
+                await using var context = ContextProvider();
+
+                var receipts = await context.ReceiptsDocuments
+                    .Include(d => d.ReceiptsResource)
+                    .ThenInclude(r => r.Resource)
+                    .Include(d => d.ReceiptsResource.Measurement)
+                    .GetDataAsync(query, "Id asc");
+
+
+                return DataResultDto<GridResultDto<ReceiptDto>>.CreateFromData(new GridResultDto<ReceiptDto>
+                {
+                    Data = [.. receipts.Value.Select(v => new ReceiptDto
+                    {
+                        Number = v.Number,
+                        Date = v.Date,
+                        Measurement = new MeasurementInStorageDto
+                        {
+                            Name = v.ReceiptsResource.Measurement.Name,
+                        },
+                        Resource = new ResourceInStorageDto
+                        {
+                            Name = v.ReceiptsResource.Resource.Name,
+                        },
+                        Count = v.ReceiptsResource.Count
+                    })],
+                    Count = receipts.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                return DataResultDto<GridResultDto<ReceiptDto>>.CreateFromException(ex);
             }
         }
     }

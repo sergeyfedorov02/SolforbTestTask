@@ -1,6 +1,50 @@
 ﻿@page "/receipts"
-<h3>Receipts</h3>
+
+@* <h3>Receipts</h3>
 
 @code {
 
-}
+} *@
+
+@using SolforbTestTask.Client.Services
+@using SolforbTestTask.Client.Extensions
+@using DataContracts
+
+<PageTitle>Поступления</PageTitle>
+
+<RadzenStack Gap="1rem">
+    <LocalizedDataGrid @ref=@grid
+                       Data="@receipts" Count="@count" TItem="ReceiptDto" LoadData="@LoadData"
+                       ColumnWidth="140px"
+                       PagerAlwaysVisible="true"
+                       LogicalFilterOperator="LogicalFilterOperator.And"
+                       IsLoading="@isLoading"
+                       AllowMultiColumnSorting="false"
+                       PageSizeOptions="@pageSizeOptions"
+                       ShowPagingSummary="true"
+                       AllowFiltering="true" AllowSorting="true" AllowColumnResize="true"
+                       AllowGrouping="true"
+                       AllowColumnPicking="true"
+                       AllowColumnReorder="true"
+                       FilterMode="FilterMode.Advanced"
+                       FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                       AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" PageSize="@pageSize">
+        <HeaderTemplate>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem;" Wrap="FlexWrap.Wrap">
+                @* <RadzenButton Icon="add" Click="@CreateOrder" MouseEnter="@(args => ShowTooltip(args, "Создать заказ"))" />  *@
+                <RadzenButton Icon="refresh" Click="@(_ => grid.Reload())" MouseEnter="@(args => ShowTooltip(args, "Обновить данные"))" />
+                <RadzenButton Icon="filter_alt_off" Click="@ResetFiltersAsync" MouseEnter="@(args => ShowTooltip(args, "Cбросить фильтры"))" />
+            </RadzenStack>
+        </HeaderTemplate>
+        <PagingSummaryTemplate>
+            Страница @context.CurrentPage из @context.NumberOfPages <b>(Всего @context.TotalCount записей)</b>
+        </PagingSummaryTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="ReceiptDto" Property="Number" Title="Номер" FilterMode="FilterMode.CheckBoxList" />
+            <RadzenDataGridColumn TItem="ReceiptDto" Property="Date" Title="Дата" />
+            <RadzenDataGridColumn TItem="ReceiptDto" Property="Resource.Name" Title="Ресурс" />
+            <RadzenDataGridColumn TItem="ReceiptDto" Property="Measurement.Name" Title="Единица измерения" />
+            <RadzenDataGridColumn TItem="ReceiptDto" Property="Count" Title="Количество" />
+        </Columns>
+    </LocalizedDataGrid>
+</RadzenStack>

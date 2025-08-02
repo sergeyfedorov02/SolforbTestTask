@@ -50,5 +50,32 @@ namespace SolforbTestTask.Server.Controllers
             }
             return Ok(result.Data);
         }
+
+        /// <summary>
+        /// Получение записей из Receipt
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("getReceipt")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BalanceDto>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<GridResultDto<ReceiptDto>>> GetReceipt(FilterDto filterDto)
+        {
+            var result = await _balanceService.GetReceiptAsync(new Query
+            {
+                Skip = filterDto.Skip,
+                Top = filterDto.Top,
+                Filter = filterDto.Filter,
+                OrderBy = filterDto.OrderBy,
+            });
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, "Ошибка при получении данных для Receipt от Сервиса");
+                return StatusCode(500, "Ошибка при получении данных для Receipt от Сервиса");
+
+            }
+            return Ok(result.Data);
+        }
     }
 }

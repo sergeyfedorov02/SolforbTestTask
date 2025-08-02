@@ -6,5 +6,7 @@ namespace SolforbTestTask.Client.Services
     public interface IStorageService
     {
         Task<DataResultDto<GridResultDto<BalanceDto>>> GetBalanceAsync(FilterDto filterDto);
+
+        Task<DataResultDto<GridResultDto<ReceiptDto>>> GetReceiptAsync(FilterDto filterDto);
     }
 }

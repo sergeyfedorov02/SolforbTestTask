@@ -31,5 +31,25 @@ namespace SolforbTestTask.Client.Services
                 return DataResultDto<GridResultDto<BalanceDto>>.CreateFromException(ex);
             }
         }
+
+        public async Task<DataResultDto<GridResultDto<ReceiptDto>>> GetReceiptAsync(FilterDto filterDto)
+        {
+            try
+            {
+                var x = await _httpClient.PostAsJsonAsync($"api/storage/getReceipt?", filterDto);
+
+                if (!x.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Ошибка при получении данных для Receipt от Сервера {x.StatusCode}");
+                }
+
+                var data = await x.Content.ReadFromJsonAsync<GridResultDto<ReceiptDto>>();
+                return DataResultDto<GridResultDto<ReceiptDto>>.CreateFromData(data);
+            }
+            catch (Exception ex)
+            {
+                return DataResultDto<GridResultDto<ReceiptDto>>.CreateFromException(ex);
+            }
+        }
     }
 }

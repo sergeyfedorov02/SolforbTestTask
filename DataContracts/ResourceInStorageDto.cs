@@ -1,6 +1,6 @@
 ﻿namespace DataContracts
 {
-    public class ResourceInBalanceDto
+    public class ResourceInStorageDto
     {
         public string Name { get; set; }    
     }

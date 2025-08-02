@@ -1,6 +1,6 @@
 ﻿namespace DataContracts
 {
-    public class MeasurementInBalanceDto
+    public class MeasurementInStorageDto
     {
         public string Name { get; set; }
     }
