@@ -3,11 +3,11 @@ using System.Net.Http.Json;
 
 namespace SolforbTestTask.Client.Services
 {
-    public class BalanceService : IBalanceService
+    public class StorageService : IStorageService
     {
         private readonly HttpClient _httpClient;
 
-        public BalanceService(HttpClient httpClient)
+        public StorageService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }

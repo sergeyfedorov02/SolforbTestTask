@@ -36,8 +36,14 @@ namespace SolforbTestTask.Server.Services
                 {
                     Data = [.. result.Value.Select(v => new BalanceDto
                     {
-                        MeasurementName = v.Measurement.Name,
-                        ResourceName = v.Resource.Name,
+                        Measurement = new MeasurementInBalanceDto
+                        {
+                            Name = v.Measurement.Name,
+                        },
+                        Resource = new ResourceInBalanceDto 
+                        {
+                            Name = v.Resource.Name,
+                        },
                         Count = v.Count
                     })],
                     Count = result.Count

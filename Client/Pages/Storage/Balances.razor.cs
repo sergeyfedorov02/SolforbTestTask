@@ -31,7 +31,7 @@ namespace SolforbTestTask.Client.Pages.Storage
         protected NotificationService NotificationService { get; set; }
 
         [Inject]
-        protected IBalanceService BalanceService { get; set; }
+        protected IStorageService StorageService { get; set; }
 
         [Inject]
         protected ILogger<Index> Logger { get; set; }
@@ -54,25 +54,25 @@ namespace SolforbTestTask.Client.Pages.Storage
         {
             isLoading = true;
 
-            //var result = await OrdersService.GetOrders(new Query
-            //{
-            //    Skip = args.Skip,
-            //    Top = args.Top,
-            //    Filter = args.Filter,
-            //    OrderBy = args.OrderBy
-            //});
+            var result = await StorageService.GetBalanceAsync(new FilterDto
+            {
+                Skip = args.Skip,
+                Top = args.Top,
+                Filter = args.Filter,
+                OrderBy = args.OrderBy
+            });
 
-            //if (result.IsOk)
-            //{
-            //    count = result.Data.Count;
-            //    balances = [.. result.Data.Value];
-            //}
-            //else
-            //{
-            //    Logger.LogError(result.Exception, $"Ошибка при получении таблицы заказов (filter={args.Filter})");
-            //    count = 0;
-            //    balances = [];
-            //}
+            if (result.Success)
+            {
+                count = result.Data.Count;
+                balances = [.. result.Data.Data];
+            }
+            else
+            {
+                Logger.LogError(result.Exception, $"Ошибка при получении таблицы Balance (filter={args.Filter})");
+                count = 0;
+                balances = [];
+            }
 
             isLoading = false;
             StateHasChanged();

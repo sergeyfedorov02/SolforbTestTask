@@ -3,7 +3,7 @@ using Radzen;
 
 namespace SolforbTestTask.Client.Services
 {
-    public interface IBalanceService
+    public interface IStorageService
     {
         Task<DataResultDto<GridResultDto<BalanceDto>>> GetBalanceAsync(FilterDto filterDto);
     }

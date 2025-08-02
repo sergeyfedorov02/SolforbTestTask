@@ -2,8 +2,8 @@
 {
     public class BalanceDto
     {
-        public string ResourceName { get; set; }
-        public string MeasurementName { get; set; }
+        public ResourceInBalanceDto Resource { get; set; }
+        public MeasurementInBalanceDto Measurement { get; set; }
         public int Count { get; set; }
     }
 }

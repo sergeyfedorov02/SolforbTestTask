@@ -34,9 +34,9 @@
             Страница @context.CurrentPage из @context.NumberOfPages <b>(Всего @context.TotalCount записей)</b>
         </PagingSummaryTemplate>
         <Columns>
-            <RadzenDataGridColumn TItem="Balances" Property="Resource.Name" Title="Ресурс" />
-            <RadzenDataGridColumn TItem="Balances" Property="Measurement.Name" Title="Единица измерения" />
-            <RadzenDataGridColumn TItem="Balances" Property="Count" Title="Количество" />
+            <RadzenDataGridColumn TItem="BalanceDto" Property="Resource.Name" Title="Ресурс" FilterMode="FilterMode.CheckBoxList" />
+            <RadzenDataGridColumn TItem="BalanceDto" Property="Measurement.Name" Title="Единица измерения" />
+            <RadzenDataGridColumn TItem="BalanceDto" Property="Count" Title="Количество" />
         </Columns>
     </LocalizedDataGrid> 
 </RadzenStack>
