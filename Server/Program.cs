@@ -18,7 +18,7 @@ builder.Services.AddRadzenCookieThemeService(options =>
     options.Name = "SolforbTestTaskTheme";
     options.Duration = TimeSpan.FromDays(365);
 });
-//builder.Services.AddHttpClient();
+builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IStorageService, StorageService>();
 

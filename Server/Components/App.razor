@@ -6,16 +6,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="@NavigationManager.BaseUri" />
-    <RadzenTheme @rendermode="@InteractiveWebAssembly" Theme="material" />
+    <RadzenTheme @rendermode="@(new InteractiveWebAssemblyRenderMode(prerender: false))" Theme="material" />
     <link rel="stylesheet" href="css/site.css" />
     <link rel="icon" href="favicon.ico" />
     <link href="manifest.json" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
-    <HeadOutlet @rendermode="@InteractiveWebAssembly" />
+    <HeadOutlet @rendermode="@(new InteractiveWebAssemblyRenderMode(prerender: false))" />
 </head>
 
 <body>
-    <Routes @rendermode="@InteractiveWebAssembly" />
+    <Routes @rendermode="@(new InteractiveWebAssemblyRenderMode(prerender: false))" />
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>

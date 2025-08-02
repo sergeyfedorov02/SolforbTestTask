@@ -30,8 +30,8 @@ namespace SolforbTestTask.Client.Pages.Storage
         [Inject]
         protected NotificationService NotificationService { get; set; }
 
-        //[Inject]
-       // protected IBalanceService BalanceService { get; set; }
+        [Inject]
+        protected IBalanceService BalanceService { get; set; }
 
         [Inject]
         protected ILogger<Index> Logger { get; set; }
