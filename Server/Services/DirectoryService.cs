@@ -5,6 +5,7 @@ using SolforbTestTask.Client.Pages.Directory;
 using SolforbTestTask.Server.Data;
 using SolforbTestTask.Server.Extensions;
 using SolforbTestTask.Server.Models.Entities;
+using System.Diagnostics.Metrics;
 
 namespace SolforbTestTask.Server.Services
 {
@@ -176,6 +177,174 @@ namespace SolforbTestTask.Server.Services
 
                 // успешное удаление
                 context.Resources.Remove(resource);
+                await context.SaveChangesAsync();
+
+                return ResultDto.CreateOk();
+
+            }
+            catch (InvalidOperationException e)
+            {
+                return ResultDto.CreateFromException(e);
+            }
+            catch (Exception ex)
+            {
+                return ResultDto.CreateFromException(ex);
+            }
+        }
+
+        public async Task<DataResultDto<GridResultDto<MeasurementDto>>> GetMeasurementAsync(Query query, int status)
+        {
+            try
+            {
+                await using var context = ContextProvider();
+
+                // проведем фильтрацию по IsArchived 
+                var queryable = context.Measurements.Where(r => r.Status == status);
+
+                var result = await queryable.GetDataAsync(query, "Id asc");
+
+
+                return DataResultDto<GridResultDto<MeasurementDto>>.CreateFromData(new GridResultDto<MeasurementDto>
+                {
+                    Data = [.. result.Value.Select(v => new MeasurementDto
+                    {
+                        Id = v.Id,
+                        Name = v.Name,
+                        Status = v.Status
+                    })],
+                    Count = result.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                return DataResultDto<GridResultDto<MeasurementDto>>.CreateFromException(ex);
+            }
+        }
+
+        public async Task<ResultDto> CreateMeasurementAsync(MeasurementDto measurementDto)
+        {
+            try
+            {
+                await using var context = ContextProvider();
+
+                var measurement = new Measurement
+                {
+                    Name = measurementDto.Name.Trim(),
+                    Status = 1
+                };
+
+                if (context.Measurements.FirstOrDefault(r => r.Name == measurement.Name) != null)
+                {
+                    throw new ArgumentException("Единица измерения с таким именем уже существует");
+                }
+
+                context.Measurements.Add(measurement);
+                await context.SaveChangesAsync();
+
+                return ResultDto.CreateOk();
+            }
+            catch (ArgumentException e)
+            {
+                return ResultDto.CreateFromException(e);
+            }
+            catch (Exception ex)
+            {
+                return ResultDto.CreateFromException(new Exception("Ошибка при добавлении в базу", ex));
+            }
+        }
+
+        public async Task<ResultDto> UpdateMeasurementAsync(MeasurementDto measurementDto)
+        {
+            try
+            {
+                await using var context = ContextProvider();
+
+                // проверяем, что такой ресурс есть в Базе данных
+                var measurement = await context.Measurements.FindAsync(measurementDto.Id) ?? throw new ArgumentException("Единица измерения не найдена");
+
+                // проверяем уникальность нового имени единицы измерения
+                if (context.Measurements.Any(r => r.Name == measurementDto.Name && r.Id != measurementDto.Id))
+                {
+                    throw new ArgumentException("Единица измерения с таким именем уже существует");
+                }
+
+                measurement.Name = measurementDto.Name.Trim();
+                await context.SaveChangesAsync();
+
+                return ResultDto.CreateOk();
+            }
+            catch (ArgumentException e)
+            {
+                return ResultDto.CreateFromException(e);
+            }
+            catch (Exception ex)
+            {
+                return ResultDto.CreateFromException(ex);
+            }
+        }
+
+        public async Task<ResultDto> ArchiveMeasurementAsync(MeasurementDto measurementDto)
+        {
+            try
+            {
+                await using var context = ContextProvider();
+
+                var measurement = await context.Measurements.FindAsync(measurementDto.Id);
+                if (measurement == null)
+                {
+                    throw new ArgumentException("Единица измерения не найдена");
+                }
+
+                // меняем статус
+                measurement.Status = measurement.Status == 1 ? 2 : 1;
+                await context.SaveChangesAsync();
+
+                measurementDto.Status = measurement.Status;
+
+                return ResultDto.CreateOk();
+            }
+            catch (ArgumentException e)
+            {
+                return ResultDto.CreateFromException(e);
+            }
+            catch (Exception ex)
+            {
+                return ResultDto.CreateFromException(ex);
+            }
+        }
+
+        public async Task<ResultDto> DeleteMeasurementAsync(long measurementId)
+        {
+            try
+            {
+                await using var context = ContextProvider();
+
+                // единица измерения уже несуществует
+                var measurement = await context.Measurements.FindAsync(measurementId);
+                if (measurement == null)
+                {
+                    throw new ArgumentException("Единица измерения не найдена");
+                }
+
+                // единица измерения используется где-то -> нельзя удалять
+                var errors = new List<string>();
+
+                if (await context.Balances.AnyAsync(b => b.MeasurementId == measurementId))
+                    errors.Add("используется в Balance");
+
+                if (await context.ReceiptsResources.AnyAsync(r => r.MeasurementId == measurementId))
+                    errors.Add("используется в ReceiptsResource");
+
+                if (await context.ShipmentsResources.AnyAsync(s => s.MeasurementId == measurementId))
+                    errors.Add("используется в ShipmentsResource");
+
+                if (errors.Count > 0)
+                {
+                    throw new InvalidOperationException($"Невозможно удалить единицу измерения. {string.Join(", ", errors)}");
+                }
+
+                // успешное удаление
+                context.Measurements.Remove(measurement);
                 await context.SaveChangesAsync();
 
                 return ResultDto.CreateOk();

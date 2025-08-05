@@ -25,6 +25,7 @@ namespace SolforbTestTask.Server.Controllers
         /// <summary>
         /// Получение записей из Resource
         /// </summary>
+        /// <param name="filterDirectoryDto"></param>
         /// <returns></returns>
         [HttpPost("getResource")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ResourceDto>))]
@@ -52,6 +53,7 @@ namespace SolforbTestTask.Server.Controllers
         /// <summary>
         /// Создание Resource
         /// </summary>
+        /// <param name="resourceDto"></param>
         /// <returns></returns>
         [HttpPost("createResource")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResourceDto))]
@@ -105,7 +107,7 @@ namespace SolforbTestTask.Server.Controllers
         /// <summary>
         /// Архивирование Resource
         /// </summary>
-        /// <param name="resourceId"></param>
+        /// <param name="resourceDto"></param>
         /// <returns></returns>
         [HttpPost("archiveResource")]
         public async Task<ActionResult<bool>> ArchiveResource([FromBody] ResourceDto resourceDto)
@@ -124,7 +126,7 @@ namespace SolforbTestTask.Server.Controllers
         /// <summary>
         /// Удаление Resource
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="resourceId"></param>
         /// <returns></returns>
         [HttpDelete("deleteResource/{resourceId}")]
         public async Task<ActionResult<bool>> DeleteResource(long resourceId)
@@ -134,6 +136,126 @@ namespace SolforbTestTask.Server.Controllers
             if (!result.Success)
             {
                 Logger.LogError(result.Exception, "Ошибка при удалении Resource");
+                return BadRequest(result.Exception?.Message);
+            }
+
+            return Ok(true);
+        }
+
+        /// <summary>
+        /// Получение записей из Measurement
+        /// </summary>
+        /// <param name="filterDirectoryDto"></param>
+        /// <returns></returns>
+        [HttpPost("getMeasurement")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MeasurementDto>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<GridResultDto<MeasurementDto>>> GetMeasurement(FilterDirectoryDto filterDirectoryDto)
+        {
+            var result = await _directoryService.GetMeasurementAsync(new Query
+            {
+                Skip = filterDirectoryDto.Skip,
+                Top = filterDirectoryDto.Top,
+                Filter = filterDirectoryDto.Filter,
+                OrderBy = filterDirectoryDto.OrderBy
+            }, filterDirectoryDto.Status);
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, "Ошибка при получении данных для Measurement от Сервиса");
+                return StatusCode(500, "Ошибка при получении данных для Measurement от Сервиса");
+
+            }
+            return Ok(result.Data);
+        }
+
+        /// <summary>
+        /// Создание Measurement
+        /// </summary>
+        /// <param name="measurementDto"></param>
+        /// <returns></returns>
+        [HttpPost("createMeasurement")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MeasurementDto))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<bool>> CreateMeasurement([FromBody] MeasurementDto measurementDto)
+        {
+            if (string.IsNullOrWhiteSpace(measurementDto.Name))
+            {
+                return BadRequest("Не указано наименование");
+            }
+
+            var result = await _directoryService.CreateMeasurementAsync(measurementDto);
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, "Ошибка при создании Measurement от Сервиса");
+                return StatusCode(500, "Ошибка при создании Measurement от Сервиса");
+
+            }
+            return Ok(true);
+        }
+
+        /// <summary>
+        /// Редактирование Measurement
+        /// </summary>
+        /// <param name="measurementDto"></param>
+        /// <returns></returns>
+        [HttpPut("updateMeasurement")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MeasurementDto))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<bool>> UpdateMeasurement([FromBody] MeasurementDto measurementDto)
+        {
+            if (string.IsNullOrWhiteSpace(measurementDto.Name))
+            {
+                return BadRequest("Нельзя указать пустое наименование");
+            }
+
+            var result = await _directoryService.UpdateMeasurementAsync(measurementDto);
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, "Ошибка при обновлении Measurement от Сервиса");
+                return StatusCode(500, "Ошибка при обновлении Measurement от Сервиса");
+            }
+
+            return Ok(true);
+        }
+
+        /// <summary>
+        /// Архивирование Measurement
+        /// </summary>
+        /// <param name="measurementDto"></param>
+        /// <returns></returns>
+        [HttpPost("archiveMeasurement")]
+        public async Task<ActionResult<bool>> ArchiveMeasurement([FromBody] MeasurementDto measurementDto)
+        {
+            var result = await _directoryService.ArchiveMeasurementAsync(measurementDto);
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, "Ошибка при архивировании Measurement");
+                return BadRequest(result.Exception?.Message);
+            }
+
+            return Ok(true);
+        }
+
+        /// <summary>
+        /// Удаление Measurement
+        /// </summary>
+        /// <param name="measurementId"></param>
+        /// <returns></returns>
+        [HttpDelete("deleteMeasurement/{measurementId}")]
+        public async Task<ActionResult<bool>> DeleteMeasurement(long measurementId)
+        {
+            var result = await _directoryService.DeleteMeasurementAsync(measurementId);
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, "Ошибка при удалении Measurement");
                 return BadRequest(result.Exception?.Message);
             }
 

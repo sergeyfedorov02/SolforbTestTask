@@ -70,7 +70,7 @@ namespace SolforbTestTask.Client.Components
                 NotificationService.Notify(
                     NotificationSeverity.Error,
                     "Ошибка",
-                    result.Exception?.Message ?? "Неизвестная ошибка при архивировании");
+                    result.Exception?.Message ?? "Неизвестная ошибка при архивировании ресурса");
             }
         }
 
@@ -89,7 +89,7 @@ namespace SolforbTestTask.Client.Components
                 NotificationService.Notify(
                     NotificationSeverity.Error,
                     "Ошибка",
-                    result.Exception?.Message ?? "Неизвестная ошибка при удалении");
+                    result.Exception?.Message ?? "Неизвестная ошибка при удалении ресурса");
             }
         }
 

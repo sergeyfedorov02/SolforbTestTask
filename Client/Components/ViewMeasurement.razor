@@ -1,0 +1,41 @@
+﻿@using DataContracts
+
+<RadzenStack style="min-width: 100%; box-sizing: border-box;">
+    <RadzenTemplateForm TItem="MeasurementDto" Data=@editModel Submit="@OnSubmit" InvalidSubmit="@OnInvalidSubmit">
+        <RadzenFieldset Style="padding: 1.5rem;">
+            <RadzenStack Gap="1.5rem" Style="width: 100%;">
+
+                <!-- Наименование единицы измерения -->
+                <RadzenRow AlignItems="AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="3" class="rz-text-align-start rz-text-nowrap">
+                        <RadzenLabel Text="Наименование" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="9">
+                        <RadzenTextBox Name="Measurement.Name" @bind-Value=@editModel.Name
+                                       Style="width: 100%;" aria-label="Measurement.Name" />
+                        <div style="margin-top: 4px;">
+                            <RadzenRequiredValidator Component="Measurement.Name" Text="Наименование обязательно"
+                                                     Style="position: absolute; color: var(--rz-danger);" />
+                        </div>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <!-- Кнопки -->
+                <RadzenRow JustifyContent="JustifyContent.Center" class="rz-mt-3">
+                    <RadzenColumn Size="4">
+                        <RadzenButton Click="@OnDelete" Text="Удалить"
+                                      Style="min-width: 150px; margin: 0 5px;" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="4">
+                        <RadzenButton ButtonType="ButtonType.Submit" Text="Сохранить"
+                                      Style="min-width: 150px; margin: 0 5px;" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="4">
+                        <RadzenButton Text="@(editModel.Status == 1 ? "В архив" : "В работу")"
+                                      Click="@OnArchive" Style="min-width: 150px; margin: 0 5px;" />
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenFieldset>
+    </RadzenTemplateForm>
+</RadzenStack>
