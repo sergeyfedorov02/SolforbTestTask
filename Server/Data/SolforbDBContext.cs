@@ -41,7 +41,7 @@ namespace SolforbTestTask.Server.Data
 
             builder.Entity<ReceiptsResource>()
                 .HasIndex(f => f.DocumentId) // индекс для сортировки по этому полю
-                .IsUnique(true);
+                .IsUnique(false);
 
             // Настройка Resource
             builder.Entity<Resource>()

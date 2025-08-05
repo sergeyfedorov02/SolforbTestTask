@@ -13,8 +13,12 @@
 <PageTitle>Поступления</PageTitle>
 
 <RadzenStack Gap="1rem">
+    <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" AlignItems="AlignItems.Center">
+        <RadzenButton Text="Добавить" Icon="add" Click="@CreateReceiptDocumentDialogBox" />
+    </RadzenStack>
+
     <LocalizedDataGrid @ref=@grid
-                       Data="@receipts" Count="@count" TItem="ReceiptDto" LoadData="@LoadData"
+                       Data="@receipts" Count="@count" TItem="ReceiptDocumentDto" LoadData="@LoadData"
                        ColumnWidth="140px"
                        PagerAlwaysVisible="true"
                        LogicalFilterOperator="LogicalFilterOperator.And"
@@ -40,11 +44,11 @@
             Страница @context.CurrentPage из @context.NumberOfPages <b>(Всего @context.TotalCount записей)</b>
         </PagingSummaryTemplate>
         <Columns>
-            <RadzenDataGridColumn TItem="ReceiptDto" Property="Number" Title="Номер" FilterMode="FilterMode.CheckBoxList" />
-            <RadzenDataGridColumn TItem="ReceiptDto" Property="Date" Title="Дата" />
-            <RadzenDataGridColumn TItem="ReceiptDto" Property="Resource.Name" Title="Ресурс" />
-            <RadzenDataGridColumn TItem="ReceiptDto" Property="Measurement.Name" Title="Единица измерения" />
-            <RadzenDataGridColumn TItem="ReceiptDto" Property="Count" Title="Количество" />
+            <RadzenDataGridColumn TItem="ReceiptDocumentDto" Property="Number" Title="Номер" FilterMode="FilterMode.CheckBoxList" />
+            <RadzenDataGridColumn TItem="ReceiptDocumentDto" Property="Date" Title="Дата" />
+            @* <RadzenDataGridColumn TItem="ReceiptDocumentDto" Property="Resource.Name" Title="Ресурс" />
+            <RadzenDataGridColumn TItem="ReceiptDocumentDto" Property="Measurement.Name" Title="Единица измерения" />
+            <RadzenDataGridColumn TItem="ReceiptDocumentDto" Property="Count" Title="Количество" /> *@
         </Columns>
     </LocalizedDataGrid>
 </RadzenStack>

@@ -32,7 +32,7 @@ namespace SolforbTestTask.Client.Services
             }
         }
 
-        public async Task<DataResultDto<GridResultDto<ReceiptDto>>> GetReceiptAsync(FilterDto filterDto)
+        public async Task<DataResultDto<GridResultDto<ReceiptDocumentDto>>> GetReceiptAsync(FilterDto filterDto)
         {
             try
             {
@@ -43,12 +43,36 @@ namespace SolforbTestTask.Client.Services
                     throw new Exception($"Ошибка при получении данных для Receipt от Сервера {x.StatusCode}");
                 }
 
-                var data = await x.Content.ReadFromJsonAsync<GridResultDto<ReceiptDto>>();
-                return DataResultDto<GridResultDto<ReceiptDto>>.CreateFromData(data);
+                var data = await x.Content.ReadFromJsonAsync<GridResultDto<ReceiptDocumentDto>>();
+                return DataResultDto<GridResultDto<ReceiptDocumentDto>>.CreateFromData(data);
             }
             catch (Exception ex)
             {
-                return DataResultDto<GridResultDto<ReceiptDto>>.CreateFromException(ex);
+                return DataResultDto<GridResultDto<ReceiptDocumentDto>>.CreateFromException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Создание ReceiptDocument
+        /// </summary>
+        /// <param name="receiptDocumentDto"></param>
+        /// <returns></returns>
+        public async Task<ResultDto> CreateReceiptDocumentAsync(ReceiptDocumentDto receiptDocumentDto)
+        {
+            try
+            {
+                var x = await _httpClient.PostAsJsonAsync("api/storage/createReceiptDocument", receiptDocumentDto);
+
+                if (!x.IsSuccessStatusCode)
+                {
+                    return ResultDto.CreateFromException(new Exception($"Ошибка при создании ReceiptDocument от Сервера статус={x.StatusCode}"));
+                }
+                return ResultDto.CreateOk();
+            }
+
+            catch (Exception ex)
+            {
+                return ResultDto.CreateFromException(new Exception("Ошибка при создании ReceiptDocument от Сервера", ex));
             }
         }
     }

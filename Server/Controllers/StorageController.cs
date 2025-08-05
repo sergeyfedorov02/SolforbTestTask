@@ -15,11 +15,11 @@ namespace SolforbTestTask.Server.Controllers
         private ILogger<StorageController> Logger { get; }
 
         public StorageController(
-            IStorageService balanceService,  // для связи БД и объектной модели C# (в папке Entities)
+            IStorageService storageService,  // для связи БД и объектной модели C# (в папке Entities)
             // IValidator<CsvRecordDto> validator,
             ILogger<StorageController> logger)
         {
-            _storageService = balanceService;
+            _storageService = storageService;
             //_validator = validator;
             Logger = logger;
         }
@@ -59,7 +59,7 @@ namespace SolforbTestTask.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BalanceDto>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<GridResultDto<ReceiptDto>>> GetReceipt(FilterDto filterDto)
+        public async Task<ActionResult<GridResultDto<ReceiptDocumentDto>>> GetReceipt(FilterDto filterDto)
         {
             var result = await _storageService.GetReceiptAsync(new Query
             {
@@ -76,6 +76,38 @@ namespace SolforbTestTask.Server.Controllers
 
             }
             return Ok(result.Data);
+        }
+
+        /// <summary>
+        /// Создание ReceiptDocument
+        /// </summary>
+        /// <param name="receiptDocumentDto"></param>
+        /// <returns></returns>
+        [HttpPost("createReceiptDocument")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<bool>> CreateReceiptDocument([FromBody] ReceiptDocumentDto receiptDocumentDto)
+        {
+            if (string.IsNullOrWhiteSpace(receiptDocumentDto.Number))
+            {
+                return BadRequest("Не указан номер документа");
+            }
+
+            if (receiptDocumentDto.ReceiptResources == null || !receiptDocumentDto.ReceiptResources.Any())
+            {
+                return BadRequest("Документ должен содержать хотя бы один ресурс");
+            }
+
+            var result = await _storageService.CreateReceiptDocumentAsync(receiptDocumentDto);
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, "Ошибка при создании ReceiptDocument от Сервиса");
+                return StatusCode(500, "Ошибка при создании ReceiptDocument от Сервиса");
+
+            }
+            return Ok(true);
         }
     }
 }

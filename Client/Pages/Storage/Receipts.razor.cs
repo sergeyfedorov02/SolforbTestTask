@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Radzen;
 using Radzen.Blazor;
+using SolforbTestTask.Client.Components;
 using SolforbTestTask.Client.Services;
 
 namespace SolforbTestTask.Client.Pages.Storage
@@ -33,10 +34,10 @@ namespace SolforbTestTask.Client.Pages.Storage
         [Inject]
         protected ILogger<Index> Logger { get; set; }
 
-        protected RadzenDataGrid<ReceiptDto> grid;
+        protected RadzenDataGrid<ReceiptDocumentDto> grid;
         protected bool isLoading;
 
-        protected IEnumerable<ReceiptDto> receipts;
+        protected IEnumerable<ReceiptDocumentDto> receipts;
         protected int count;
 
         protected int pageSize = 20;
@@ -73,6 +74,27 @@ namespace SolforbTestTask.Client.Pages.Storage
 
             isLoading = false;
             StateHasChanged();
+        }
+
+        /// <summary>
+        /// Вызов диалогового окна для создания документа поступления
+        /// </summary>
+        /// <returns></returns>
+        protected async Task CreateReceiptDocumentDialogBox()
+        {
+            await DialogService.OpenAsync<CreateReceiptDocument>(
+                "Добавление документа поступления",
+                new Dictionary<string, object> { },
+                new DialogOptions
+                {
+                    Resizable = false,
+                    Draggable = true,
+                    Style = "min-width:1100px; min-height:600px;",
+                    CloseDialogOnOverlayClick = false
+                }
+            );
+
+            await grid.Reload();
         }
 
         /// <summary>
