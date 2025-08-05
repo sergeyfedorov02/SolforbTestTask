@@ -1,0 +1,35 @@
+﻿@using DataContracts
+
+<RadzenStack style="min-width: 100%; box-sizing: border-box;">
+    <RadzenTemplateForm TItem="ResourceDto" Data=@model Submit ="@OnSubmit" InvalidSubmit="@OnInvalidSubmit">
+        <RadzenFieldset Style="padding: 1.5rem;">
+            <RadzenStack Gap="1.5rem" Style="width: 100%;">
+               
+                <!-- Наименование ресурса -->
+                <RadzenRow AlignItems="AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="3" class="rz-text-align-start rz-text-nowrap">
+                        <RadzenLabel Text="Наименование" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="9">
+                        <RadzenTextBox Name="Resource.Name" @bind-Value=@model.Name
+                                       Style="width: 100%;" aria-label="Resource.Name" />
+                        <div style="margin-top: 4px;">
+                            <RadzenRequiredValidator Component="Resource.Name" Text="Наименование обязательно"
+                                                     Style="position: absolute; color: var(--rz-danger);" />
+                        </div>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <!-- Кнопка добавления -->
+                <RadzenRow JustifyContent="JustifyContent.Center" class="rz-mt-3">
+                    <RadzenColumn Size="12">
+                        <div style="display: flex; justify-content: center;">
+                            <RadzenButton ButtonType="ButtonType.Submit" Text="Добавить"
+                                          Style="min-width: 150px;"></RadzenButton>
+                        </div>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenStack>
+        </RadzenFieldset>
+    </RadzenTemplateForm>
+</RadzenStack>

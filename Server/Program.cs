@@ -21,6 +21,7 @@ builder.Services.AddRadzenCookieThemeService(options =>
 builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IStorageService, StorageService>();
+builder.Services.AddTransient<IDirectoryService, DirectoryService>();
 
 // настраиваем провайдера для БД (PostgreSQL)
 builder.Services.AddDbContext<SolforbDBContext>(options =>

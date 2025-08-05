@@ -11,7 +11,7 @@ namespace SolforbTestTask.Server.Controllers
     [Route("api/[controller]")]
     public class StorageController : ControllerBase
     {
-        private readonly IStorageService _balanceService;  // доступ к базе данных
+        private readonly IStorageService _storageService;  // доступ к базе данных
         private ILogger<StorageController> Logger { get; }
 
         public StorageController(
@@ -19,7 +19,7 @@ namespace SolforbTestTask.Server.Controllers
             // IValidator<CsvRecordDto> validator,
             ILogger<StorageController> logger)
         {
-            _balanceService = balanceService;
+            _storageService = balanceService;
             //_validator = validator;
             Logger = logger;
         }
@@ -34,7 +34,7 @@ namespace SolforbTestTask.Server.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<GridResultDto<BalanceDto>>> GetBalance(FilterDto filterDto)
         {
-            var result = await _balanceService.GetBalanceAsync(new Query
+            var result = await _storageService.GetBalanceAsync(new Query
             {
                 Skip = filterDto.Skip,
                 Top = filterDto.Top,
@@ -61,7 +61,7 @@ namespace SolforbTestTask.Server.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<GridResultDto<ReceiptDto>>> GetReceipt(FilterDto filterDto)
         {
-            var result = await _balanceService.GetReceiptAsync(new Query
+            var result = await _storageService.GetReceiptAsync(new Query
             {
                 Skip = filterDto.Skip,
                 Top = filterDto.Top,

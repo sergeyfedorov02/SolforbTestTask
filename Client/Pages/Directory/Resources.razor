@@ -1,0 +1,55 @@
+﻿@page "/resources/{statusType:int}"
+@page "/resources"
+
+@using SolforbTestTask.Client.Services
+@using SolforbTestTask.Client.Extensions
+@using DataContracts
+
+<PageTitle>Ресурсы</PageTitle>
+
+<RadzenStack Gap="1rem">
+    <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" AlignItems="AlignItems.Center">
+        @if (StatusType == 1)
+        {
+            <RadzenButton Text="Добавить" Icon="add" Click="@CreateResourceDialogBox" />
+        }
+        <RadzenButton Text="@(StatusType == 1 ? "К архиву" : "К рабочим")"
+                      Icon="@(StatusType == 1 ? "archive" : "undo")"
+                      Click="@NavigateToArchiveOrWork" />
+    </RadzenStack>
+
+      <LocalizedDataGrid @ref=@grid
+                             Style="width:80%"
+                             Data="@resources" Count="@count" TItem="ResourceDto" LoadData="@LoadData"
+                             ColumnWidth="140px"
+                             PagerAlwaysVisible="true"
+                             LogicalFilterOperator="LogicalFilterOperator.And"
+                             IsLoading="@isLoading"
+                             AllowMultiColumnSorting="false"
+                             PageSizeOptions="@pageSizeOptions"
+                             ShowPagingSummary="true"
+                             AllowFiltering="true" AllowSorting="true" AllowColumnResize="true"
+                             AllowGrouping="false"
+                             AllowColumnPicking="false"
+                             AllowColumnReorder="false"
+                             FilterMode="FilterMode.Advanced"
+                             RowDoubleClick="OnRowDoubleClick"
+                             FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                             AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" PageSize="@pageSize">
+        <HeaderTemplate>
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem;" Wrap="FlexWrap.Wrap">
+                <RadzenButton Icon="refresh" Click="@(_ => grid.Reload())" MouseEnter="@(args => ShowTooltip(args, "Обновить данные"))" />
+            </RadzenStack>
+        </HeaderTemplate>
+        <PagingSummaryTemplate>
+            Страница @context.CurrentPage из @context.NumberOfPages <b>(Всего @context.TotalCount записей)</b>
+        </PagingSummaryTemplate>
+        <Columns>
+            <RadzenDataGridColumn TItem="ResourceDto" Property="Name">
+                <HeaderTemplate>
+                    <span style="font-weight: bold;font-size: 20px">Наименование</span>
+                </HeaderTemplate>
+             </RadzenDataGridColumn>
+        </Columns>
+    </LocalizedDataGrid>
+</RadzenStack>

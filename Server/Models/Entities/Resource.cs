@@ -8,6 +8,6 @@ namespace SolforbTestTask.Server.Models.Entities
         public long Id { get; set; }
 
         public string Name { get; set; }
-        public bool IsArchived { get; set; }
+        public int Status { get; set; }
     }
 }

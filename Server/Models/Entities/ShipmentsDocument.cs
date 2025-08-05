@@ -13,6 +13,6 @@ namespace SolforbTestTask.Server.Models.Entities
         public Client Client { get; set; }
 
         public DateTime Date { get; set; }
-        public bool IsArchived { get; set; }
+        public int Status { get; set; }
     }
 }

@@ -16,6 +16,7 @@ builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(build
 builder.Services.AddHttpClient();
 
 builder.Services.AddTransient<IStorageService, StorageService>();
+builder.Services.AddTransient<IDirectoryService, DirectoryService>();
 
 var host = builder.Build();
 await host.RunAsync();
