@@ -11,10 +11,12 @@
                         <RadzenLabel Text="Наименование" />
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox Name="Resource.Name" @bind-Value=@model.Name
+                        <RadzenTextBox MaxLength=64 Name ="Resource.Name" @bind-Value =@model.Name
                                        Style="width: 100%;" aria-label="Resource.Name" />
                         <div style="margin-top: 4px;">
                             <RadzenRequiredValidator Component="Resource.Name" Text="Наименование обязательно"
+                                                     Style="position: absolute; color: var(--rz-danger);" />
+                            <RadzenLengthValidator Component="Resource.Name" Text="Слишком длинное наименование ресурса (max = 64)"
                                                      Style="position: absolute; color: var(--rz-danger);" />
                         </div>
                     </RadzenColumn>

@@ -25,10 +25,12 @@
                         <RadzenLabel Text="Номер документа" />
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox Name="ReceiptDocument.Number" @bind-Value=@model.Number
+                        <RadzenTextBox MaxLength=64 Name="ReceiptDocument.Number" @bind-Value=@model.Number
                                        Style="width: 100%;" aria-label="ReceiptDocument.Number" />
                         <div style="margin-top: 4px;">
                             <RadzenRequiredValidator Component="ReceiptDocument.Number" Text="Номер документа обязателен"
+                                                     Style="position: absolute; color: var(--rz-danger);" />
+                            <RadzenLengthValidator Max=64 Component="ReceiptDocument.Number" Text="Слишком длинный номер документа (max = 64)"
                                                      Style="position: absolute; color: var(--rz-danger);" />
                         </div>
                     </RadzenColumn>
@@ -83,7 +85,7 @@
                                
                                 <!-- Кнопка удаления -->
                                 <RadzenColumn Size="12" SizeMD="2" Style="display: flex; align-items: flex-end; justify-content: flex-end;">
-                                    @if (model.ReceiptResources.Count > 1)
+                                    @if (model.ReceiptResources.Count > 0)
                                     {
                                         <RadzenButton ButtonStyle="ButtonStyle.Danger" 
                                                      Icon="delete" 

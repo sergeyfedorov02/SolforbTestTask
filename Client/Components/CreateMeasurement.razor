@@ -11,11 +11,13 @@
                         <RadzenLabel Text="Наименование" />
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeMD="9">
-                        <RadzenTextBox Name="Measurement.Name" @bind-Value=@model.Name
+                        <RadzenTextBox MaxLength=64 Name="Measurement.Name" @bind-Value=@model.Name
                                        Style="width: 100%;" aria-label="Measurement.Name" />
                         <div style="margin-top: 4px;">
                             <RadzenRequiredValidator Component="Measurement.Name" Text="Наименование обязательно"
                                                      Style="position: absolute; color: var(--rz-danger);" />
+                            <RadzenLengthValidator Component="Measurement.Name" Text="Слишком длинное наименование единицы измерения (max = 64)"
+                                                   Style="position: absolute; color: var(--rz-danger);" />
                         </div>
                     </RadzenColumn>
                 </RadzenRow>

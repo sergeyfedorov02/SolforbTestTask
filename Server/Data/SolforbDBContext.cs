@@ -34,24 +34,33 @@ namespace SolforbTestTask.Server.Data
             builder.Entity<ReceiptsDocument>()
                .HasIndex(f => f.Number) // индекс для сортировки по этому полю
                .IsUnique(true);
+            builder.Entity<ReceiptsDocument>()
+                .Property(r => r.Number)
+                .HasMaxLength(64);
 
             // Настройка ReceiptsResource
             builder.Entity<ReceiptsResource>()
                 .HasKey(r => r.Id);
 
             builder.Entity<ReceiptsResource>()
-                .HasIndex(f => f.DocumentId) // индекс для сортировки по этому полю
-                .IsUnique(false);
+                .HasIndex(f => new { f.DocumentId, f.MeasurementId, f.ResourceId }) // индекс для обеспечения уникальности 
+                .IsUnique(true);
 
             // Настройка Resource
             builder.Entity<Resource>()
                 .HasIndex(r => r.Name)
                 .IsUnique();
+            builder.Entity<Resource>()
+                .Property(r => r.Name)
+                .HasMaxLength(64);
 
             // Настройка Measurement
             builder.Entity<Measurement>()
                 .HasIndex(r => r.Name)
                 .IsUnique();
+            builder.Entity<Measurement>()
+                .Property(r => r.Name)
+                .HasMaxLength(64);
         }
     }
 }

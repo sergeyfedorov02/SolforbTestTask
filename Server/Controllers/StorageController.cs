@@ -1,9 +1,7 @@
 ﻿using DataContracts;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Radzen;
 using SolforbTestTask.Server.Services;
-using System.ComponentModel.DataAnnotations;
 
 namespace SolforbTestTask.Server.Controllers
 {
@@ -55,13 +53,13 @@ namespace SolforbTestTask.Server.Controllers
         /// Получение записей из Receipt
         /// </summary>
         /// <returns></returns>
-        [HttpPost("getReceipt")]
+        [HttpPost("getReceiptItems")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BalanceDto>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<GridResultDto<ReceiptDocumentDto>>> GetReceipt(FilterDto filterDto)
+        public async Task<ActionResult<GridResultDto<ReceiptDocumentItemDto>>> GetReceptDocumentItems(FilterDto filterDto)
         {
-            var result = await _storageService.GetReceiptAsync(new Query
+            var result = await _storageService.GetReceiptDocumentItemsAsync(new Query
             {
                 Skip = filterDto.Skip,
                 Top = filterDto.Top,
@@ -92,11 +90,6 @@ namespace SolforbTestTask.Server.Controllers
             if (string.IsNullOrWhiteSpace(receiptDocumentDto.Number))
             {
                 return BadRequest("Не указан номер документа");
-            }
-
-            if (receiptDocumentDto.ReceiptResources == null || !receiptDocumentDto.ReceiptResources.Any())
-            {
-                return BadRequest("Документ должен содержать хотя бы один ресурс");
             }
 
             var result = await _storageService.CreateReceiptDocumentAsync(receiptDocumentDto);

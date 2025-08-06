@@ -1,11 +1,5 @@
 ﻿@page "/receipts"
 
-@* <h3>Receipts</h3>
-
-@code {
-
-} *@
-
 @using SolforbTestTask.Client.Services
 @using SolforbTestTask.Client.Extensions
 @using DataContracts
@@ -18,8 +12,10 @@
     </RadzenStack>
 
     <LocalizedDataGrid @ref=@grid
-                       Data="@receipts" Count="@count" TItem="ReceiptDocumentDto" LoadData="@LoadData"
+                       Style="width:80%"
+                       Data="@receipts" Count="@count" TItem="ReceiptDocumentItemDto" LoadData="@LoadData"
                        ColumnWidth="140px"
+                       Render="@OnRender"
                        PagerAlwaysVisible="true"
                        LogicalFilterOperator="LogicalFilterOperator.And"
                        IsLoading="@isLoading"
@@ -27,10 +23,11 @@
                        PageSizeOptions="@pageSizeOptions"
                        ShowPagingSummary="true"
                        AllowFiltering="true" AllowSorting="true" AllowColumnResize="true"
-                       AllowGrouping="true"
-                       AllowColumnPicking="true"
-                       AllowColumnReorder="true"
+                       AllowGrouping="false"
+                       AllowColumnPicking="false"
+                       AllowColumnReorder="false"
                        FilterMode="FilterMode.Advanced"
+                       RowDoubleClick="OnRowDoubleClick"
                        FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                        AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" PageSize="@pageSize">
         <HeaderTemplate>
@@ -43,12 +40,17 @@
         <PagingSummaryTemplate>
             Страница @context.CurrentPage из @context.NumberOfPages <b>(Всего @context.TotalCount записей)</b>
         </PagingSummaryTemplate>
+        <GroupHeaderTemplate >
+            <div @ondblclick="@(async() => await OnGroupDoubleClick(context))">
+                <b>Номер: @GetDocumentNumber(context) &nbsp;&nbsp;&nbsp;&nbsp;<br /> Дата: @GetDocumentDate(context)</b>
+            </div>            
+        </GroupHeaderTemplate>
         <Columns>
-            <RadzenDataGridColumn TItem="ReceiptDocumentDto" Property="Number" Title="Номер" FilterMode="FilterMode.CheckBoxList" />
-            <RadzenDataGridColumn TItem="ReceiptDocumentDto" Property="Date" Title="Дата" />
-            @* <RadzenDataGridColumn TItem="ReceiptDocumentDto" Property="Resource.Name" Title="Ресурс" />
-            <RadzenDataGridColumn TItem="ReceiptDocumentDto" Property="Measurement.Name" Title="Единица измерения" />
-            <RadzenDataGridColumn TItem="ReceiptDocumentDto" Property="Count" Title="Количество" /> *@
+            @* <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="Number" Title="Номер" FilterMode="FilterMode.CheckBoxList" />
+            <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="Date" Title="Дата" /> *@
+            <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="ReceptItem.Resource.Name" Title="Ресурс" />
+            <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="ReceptItem.Measurement.Name" Title="Единица измерения" />
+            <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="ReceptItem.Count" Title="Количество" />
         </Columns>
     </LocalizedDataGrid>
 </RadzenStack>

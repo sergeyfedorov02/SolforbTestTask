@@ -12,6 +12,11 @@ namespace SolforbTestTask.Client.Services
             _httpClient = httpClient;
         }
 
+        /// <summary>
+        /// Получение записей для страницы Balance
+        /// </summary>
+        /// <param name="filterDto"></param>
+        /// <returns></returns>
         public async Task<DataResultDto<GridResultDto<BalanceDto>>> GetBalanceAsync(FilterDto filterDto)
         {
             try
@@ -32,23 +37,28 @@ namespace SolforbTestTask.Client.Services
             }
         }
 
-        public async Task<DataResultDto<GridResultDto<ReceiptDocumentDto>>> GetReceiptAsync(FilterDto filterDto)
+        /// <summary>
+        /// Получение записей для страницы Receipts
+        /// </summary>
+        /// <param name="filterDto"></param>
+        /// <returns></returns>
+        public async Task<DataResultDto<GridResultDto<ReceiptDocumentItemDto>>> GetReceptDocumentItems(FilterDto filterDto)
         {
             try
             {
-                var x = await _httpClient.PostAsJsonAsync($"api/storage/getReceipt?", filterDto);
+                var x = await _httpClient.PostAsJsonAsync($"api/storage/getReceiptItems", filterDto);
 
                 if (!x.IsSuccessStatusCode)
                 {
                     throw new Exception($"Ошибка при получении данных для Receipt от Сервера {x.StatusCode}");
                 }
 
-                var data = await x.Content.ReadFromJsonAsync<GridResultDto<ReceiptDocumentDto>>();
-                return DataResultDto<GridResultDto<ReceiptDocumentDto>>.CreateFromData(data);
+                var data = await x.Content.ReadFromJsonAsync<GridResultDto<ReceiptDocumentItemDto>>();
+                return DataResultDto<GridResultDto<ReceiptDocumentItemDto>>.CreateFromData(data);
             }
             catch (Exception ex)
             {
-                return DataResultDto<GridResultDto<ReceiptDocumentDto>>.CreateFromException(ex);
+                return DataResultDto<GridResultDto<ReceiptDocumentItemDto>>.CreateFromException(ex);
             }
         }
 

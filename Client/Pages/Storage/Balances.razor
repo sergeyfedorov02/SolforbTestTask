@@ -9,6 +9,7 @@
 
 <RadzenStack Gap="1rem">
       <LocalizedDataGrid @ref=@grid
+                             Style="width:80%"
                              Data="@balances" Count="@count" TItem="BalanceDto" LoadData="@LoadData"
                              ColumnWidth="140px"
                              PagerAlwaysVisible="true"
@@ -21,7 +22,7 @@
                              AllowGrouping="true"
                              AllowColumnPicking="true"
                              AllowColumnReorder="true"
-                             FilterMode="FilterMode.Advanced"
+                             FilterMode="FilterMode.CheckBoxList"
                              FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                              AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" PageSize="@pageSize">
         <HeaderTemplate>
@@ -34,9 +35,9 @@
             Страница @context.CurrentPage из @context.NumberOfPages <b>(Всего @context.TotalCount записей)</b>
         </PagingSummaryTemplate>
         <Columns>
-            <RadzenDataGridColumn TItem="BalanceDto" Property="Resource.Name" Title="Ресурс" FilterMode="FilterMode.CheckBoxList" />
+            <RadzenDataGridColumn TItem="BalanceDto" Property="Resource.Name" Title="Ресурс"/>
             <RadzenDataGridColumn TItem="BalanceDto" Property="Measurement.Name" Title="Единица измерения" />
-            <RadzenDataGridColumn TItem="BalanceDto" Property="Count" Title="Количество" />
+            <RadzenDataGridColumn TItem="BalanceDto" Property="Count" Title="Количество" FilterMode="FilterMode.Advanced" />
         </Columns>
     </LocalizedDataGrid> 
 </RadzenStack>

@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Radzen;
-using Radzen.Blazor;
 using SolforbTestTask.Client.Components;
+using SolforbTestTask.Client.Extensions;
 using SolforbTestTask.Client.Services;
 
 namespace SolforbTestTask.Client.Pages.Storage
@@ -34,14 +34,52 @@ namespace SolforbTestTask.Client.Pages.Storage
         [Inject]
         protected ILogger<Index> Logger { get; set; }
 
-        protected RadzenDataGrid<ReceiptDocumentDto> grid;
+        protected LocalizedDataGrid<ReceiptDocumentItemDto> grid;
         protected bool isLoading;
 
-        protected IEnumerable<ReceiptDocumentDto> receipts;
+        protected IEnumerable<ReceiptDocumentItemDto> receipts;
         protected int count;
 
         protected int pageSize = 20;
         protected readonly IEnumerable<int> pageSizeOptions = [10, 20, 50];
+
+        /// <summary>
+        /// Группировка по DocumentId для отображения по группам (GroupHeader)
+        /// </summary>
+        /// <param name="args"></param>
+        private void OnRender(DataGridRenderEventArgs<ReceiptDocumentItemDto> args)
+        {
+            if (args.FirstRender)
+            {
+                args.Grid.Groups.Add(new GroupDescriptor
+                {
+                    Property = nameof(ReceiptDocumentItemDto.Id),
+                });
+                StateHasChanged();
+            }
+        }
+
+        /// <summary>
+        /// Получение номера документа в GroupHeader
+        /// </summary>
+        /// <param name="group"></param>
+        /// <returns></returns>
+        private string GetDocumentNumber(Group group)
+        {
+            var groupFirstItem = group.Data.Items.OfType<ReceiptDocumentItemDto>().First();
+            return groupFirstItem.Number;
+        }
+
+        /// <summary>
+        /// Получение даты документа в GroupHeader
+        /// </summary>
+        /// <param name="group"></param>
+        /// <returns></returns>
+        private string GetDocumentDate(Group group)
+        {
+            var groupFirstItem = group.Data.Items.OfType<ReceiptDocumentItemDto>().First();
+            return groupFirstItem.Date.ToString("dd.MM.yyyy");
+        }
 
         /// <summary>
         /// Подгрузка элементов в гриде/таблице
@@ -52,7 +90,7 @@ namespace SolforbTestTask.Client.Pages.Storage
         {
             isLoading = true;
 
-            var result = await StorageService.GetReceiptAsync(new FilterDto
+            var result = await StorageService.GetReceptDocumentItems(new FilterDto
             {
                 Skip = args.Skip,
                 Top = args.Top,
@@ -95,6 +133,37 @@ namespace SolforbTestTask.Client.Pages.Storage
             );
 
             await grid.Reload();
+        }
+
+        /// <summary>
+        /// Двойное нажатие на группу (GroupHeader)
+        /// </summary>
+        /// <param name="group"></param>
+        /// <returns></returns>
+        private async Task OnGroupDoubleClick(Group group)
+        {
+            var gg = 0;
+        }
+
+        /// <summary>
+        /// Двойное нажатие на любой элемент внутри группы
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        private async Task OnRowDoubleClick(DataGridRowMouseEventArgs<ReceiptDocumentItemDto> args)
+        {
+            var xx = 0;
+            //await DialogService.OpenAsync<ViewResource>(
+            //    $"Редактирование ресурса \"{args.Data.Name}\"",
+            //    new Dictionary<string, object> { { "ResourceDto", args.Data } },
+            //    new DialogOptions
+            //    {
+            //        Resizable = false,
+            //        Draggable = true,
+            //        CloseDialogOnOverlayClick = false
+            //    }
+            //);
+            //await grid.Reload();
         }
 
         /// <summary>

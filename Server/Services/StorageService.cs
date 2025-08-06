@@ -1,10 +1,12 @@
 ﻿using DataContracts;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
+using SolforbTestTask.Client.Services;
 using SolforbTestTask.Server.Data;
 using SolforbTestTask.Server.Extensions;
 using SolforbTestTask.Server.Models.Entities;
 using System.Diagnostics.Metrics;
+using System.Linq;
 
 namespace SolforbTestTask.Server.Services
 {
@@ -57,48 +59,86 @@ namespace SolforbTestTask.Server.Services
             }
         }
 
-        public async Task<DataResultDto<GridResultDto<ReceiptDocumentDto>>> GetReceiptAsync(Query query)
+        public async Task<DataResultDto<GridResultDto<ReceiptDocumentItemDto>>> GetReceiptDocumentItemsAsync(Query query)
         {
             try
             {
                 await using var context = ContextProvider();
 
-                var receipts = await context.ReceiptsDocuments
-                    .Include(d => d.ReceiptsResources)
-                    .ThenInclude(r => r.Resource)
-                    .Include(d => d.ReceiptsResources)
-                    .ThenInclude(d => d.Measurement)
-                    .GetDataAsync(query, "Id asc");
-
-
-                return DataResultDto<GridResultDto<ReceiptDocumentDto>>.CreateFromData(new GridResultDto<ReceiptDocumentDto>
-                {
-                    Data = [.. receipts.Value.Select(v => new ReceiptDocumentDto
+                var receiptsQuery = context.ReceiptsDocuments
+                    .SelectMany(d => d.ReceiptsResources.Select(r => new ReceiptDocumentItemDto
                     {
-                        Number = v.Number,
-                        Date = v.Date,
-                        ReceiptResources = v.ReceiptsResources.Select(rr => new ReceiptResourceDto {
-                            Resource = new ResourceDto 
+                        Id = d.Id,
+                        Number = d.Number,
+                        Date = d.Date,
+                        ReceptItem = new ReceiptResourceDto
+                        {
+                            Resource = new ResourceDto
                             {
-                                Id = rr.Resource.Id,
-                                Name = rr.Resource.Name,
-                                Status = rr.Resource.Status
+                                Id = r.Resource.Id,
+                                Name = r.Resource.Name,
+                                Status = r.Resource.Status
                             },
                             Measurement = new MeasurementDto
                             {
-                                Id = rr.Measurement.Id,
-                                Name = rr.Measurement.Name,
-                                Status = rr.Measurement.Status
+                                Id = r.Measurement.Id,
+                                Name = r.Measurement.Name,
+                                Status = r.Measurement.Status
                             },
-                            Count = rr.Count
-                        }).ToList()
-                    })],
-                    Count = receipts.Count
+                            Count = r.Count,
+                        }
+                    }));
+
+                var receiptWithNoItems = context.ReceiptsDocuments.Where(d => !d.ReceiptsResources.Any())
+                    .Select(d => new ReceiptDocumentItemDto
+                    {
+                        Id = d.Id,
+                        Number = d.Number,
+                        Date = d.Date,
+                        ReceptItem = new ReceiptResourceDto
+                        {
+                            Resource = new ResourceDto
+                            {
+                                Id = 0,
+                                Name = "",
+                                Status = 1
+                            },
+
+                            Measurement = new MeasurementDto
+                            {
+                                Id = 0,
+                                Name = "",
+                                Status = 1
+                            },
+                            Count = 0
+                        }
+                    });
+
+                IQueryable<ReceiptDocumentItemDto> receiptsWithEmptyQuery = receiptsQuery.Union(receiptWithNoItems).OrderBy(d => d.Id);
+
+                var count = await receiptsWithEmptyQuery.CountAsync();
+
+                if (query.Skip != null)
+                {
+                    receiptsWithEmptyQuery = receiptsWithEmptyQuery.Skip(query.Skip.Value);
+                }
+
+                if (query.Top != null)
+                {
+                    receiptsWithEmptyQuery = receiptsWithEmptyQuery.Take(query.Top.Value);
+                }
+
+                var items = await receiptsWithEmptyQuery.ToListAsync();
+
+                return DataResultDto<GridResultDto<ReceiptDocumentItemDto>>.CreateFromData(new GridResultDto<ReceiptDocumentItemDto>
+                {
+                    Data = items,
+                    Count = count
                 });
             }
             catch (Exception ex)
             {
-                return DataResultDto<GridResultDto<ReceiptDocumentDto>>.CreateFromException(ex);
+                return DataResultDto<GridResultDto<ReceiptDocumentItemDto>>.CreateFromException(ex);
             }
         }
 
@@ -116,7 +156,7 @@ namespace SolforbTestTask.Server.Services
                     Date = receiptDocumentDto.Date
                 };
 
-                if (context.ReceiptsDocuments.FirstOrDefault(r => r.Number == receiptDocument.Number) != null)
+                if (context.ReceiptsDocuments.Any(r => r.Number == receiptDocument.Number))
                 {
                     throw new ArgumentException("Документ поступления с таким номером уже существует");
                 }
@@ -125,7 +165,7 @@ namespace SolforbTestTask.Server.Services
                 await context.SaveChangesAsync();
 
                 // ReceiptResource
-                foreach (ReceiptResourceDto receiptResourceDto in receiptDocumentDto.ReceiptResources)
+                foreach (var receiptResourceDto in receiptDocumentDto.ReceiptResources ?? [])
                 {
                     // Проверка для Ресурса
                     var resourceExists = await context.Resources
@@ -154,6 +194,30 @@ namespace SolforbTestTask.Server.Services
                     };
 
                     context.ReceiptsResources.Add(receiptResource);
+
+                    // Обновляем Balance
+                    var existingBalance = context.Balances.FirstOrDefault(b =>
+                        b.ResourceId == receiptResource.ResourceId &&
+                        b.MeasurementId == receiptResource.MeasurementId);
+
+                    // Запись существует -> обновляем
+                    if (existingBalance != null)
+                    {
+                        existingBalance.Count += receiptResource.Count;
+                        context.Balances.Update(existingBalance);
+                    }
+                    else
+                    {
+                        // не существует -> создаем
+                        var newBalance = new Balance
+                        {
+                            ResourceId = receiptResource.ResourceId,
+                            MeasurementId = receiptResource.MeasurementId,
+                            Count = receiptResource.Count
+                        };
+
+                        context.Balances.Add(newBalance);
+                    }
                 }
 
                 await context.SaveChangesAsync();

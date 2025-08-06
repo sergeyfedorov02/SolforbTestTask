@@ -27,15 +27,8 @@ namespace SolforbTestTask.Client.Components
         private ReceiptDocumentDto model = new ReceiptDocumentDto
         {
             Date = DateOnly.FromDateTime(DateTime.Now),
-            ReceiptResources = new List<ReceiptResourceDto>
-            {
-                new ReceiptResourceDto
-                {
-                    Resource = new ResourceDto(),
-                    Measurement = new MeasurementDto(),
-                    Count = 1
-                }
-            }
+            ReceiptResources = new List<ReceiptResourceDto> ()
+            
         };
 
         private List<ResourceDto> availableResources = new();
@@ -102,7 +95,7 @@ namespace SolforbTestTask.Client.Components
 
         private void RemoveResource(int index)
         {
-            if (model.ReceiptResources.Count > 1)
+            if (model.ReceiptResources.Count > 0)
             {
                 model.ReceiptResources.RemoveAt(index);
             }
@@ -112,19 +105,13 @@ namespace SolforbTestTask.Client.Components
         {
             try
             {
-                // валидация полей для ReceiptResources
-                var emptyResources = model.ReceiptResources
-                    .Where(r => r.Resource.Id == 0 ||
-                               r.Measurement.Id == 0 ||
-                               r.Count <= 0)
-                    .ToList();
-
-                if (emptyResources.Any())
+                
+                if (model.ReceiptResources.Any(r => r.Resource.Id == 0 || r.Measurement.Id == 0 || r.Count <= 0))
                 {
                     NotificationService.Notify(
-                        NotificationSeverity.Error,
-                        "Ошибка",
-                        "Заполните все поля для всех ресурсов");
+                            NotificationSeverity.Error,
+                            "Ошибка",
+                            "Заполните все поля для всех ресурсов");
                     return;
                 }
 
@@ -134,16 +121,26 @@ namespace SolforbTestTask.Client.Components
                     Number = model.Number,
                     ReceiptResources = [.. model.ReceiptResources.Select(r => new ReceiptResourceDto
                     {
-                        Resource = new ResourceDto 
-                        {
-                            Id = r.Resource.Id,
-                            Name = r.Resource.Name,
-                            Status = r.Resource.Status,
-                        },
+                        Resource = r.Resource,
                         Measurement = r.Measurement,
                         Count = r.Count
                     })]
                 };
+
+                var itemsToAdd = new HashSet<(long resId, long mesId)>();
+                foreach(var item in receiptDocumentDto.ReceiptResources)
+                {
+                    if (itemsToAdd.Contains((item.Resource.Id, item.Measurement.Id)))
+                    {
+                        NotificationService.Notify(
+                            NotificationSeverity.Error,
+                            "Ошибка",
+                            "Одинаковые записи: ресурс-единица измерения");
+                        return;
+                    }
+                    itemsToAdd.Add((item.Resource.Id, item.Measurement.Id));
+                }
+
 
                 var result = await StorageService.CreateReceiptDocumentAsync(receiptDocumentDto);
 
