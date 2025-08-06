@@ -113,7 +113,7 @@ namespace SolforbTestTask.Server.Services
                 var receiptDocument = new ReceiptsDocument
                 {
                     Number = receiptDocumentDto.Number,
-                    Date = receiptDocumentDto.Date.ToUniversalTime()  // конвертация в UTC
+                    Date = receiptDocumentDto.Date
                 };
 
                 if (context.ReceiptsDocuments.FirstOrDefault(r => r.Number == receiptDocument.Number) != null)

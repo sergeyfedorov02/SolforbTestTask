@@ -26,7 +26,7 @@ namespace SolforbTestTask.Client.Components
 
         private ReceiptDocumentDto model = new ReceiptDocumentDto
         {
-            Date = DateTime.Today,
+            Date = DateOnly.FromDateTime(DateTime.Now),
             ReceiptResources = new List<ReceiptResourceDto>
             {
                 new ReceiptResourceDto

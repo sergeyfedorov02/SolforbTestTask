@@ -7,7 +7,7 @@ namespace SolforbTestTask.Server.Models.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public string Number { get; set; }
-        public DateTime Date { get; set; }
+        public DateOnly Date { get; set; }
 
         // навигационное свойство
         public List<ReceiptsResource> ReceiptsResources { get; set; }
