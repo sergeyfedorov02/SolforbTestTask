@@ -59,7 +59,7 @@ namespace SolforbTestTask.Server.Services
             }
         }
 
-        public async Task<DataResultDto<GridResultDto<ReceiptDocumentItemDto>>> GetReceiptDocumentItemsAsync(Query query)
+        public async Task<DataResultDto<GridResultDto<ReceiptDocumentItemDto>>> GetReceiptDocumentItemsAsync(FilterReceiptItemsDto query)
         {
             try
             {
@@ -114,7 +114,35 @@ namespace SolforbTestTask.Server.Services
                         }
                     });
 
-                IQueryable<ReceiptDocumentItemDto> receiptsWithEmptyQuery = receiptsQuery.Union(receiptWithNoItems).OrderBy(d => d.Id);
+                // Применение фильтров
+                var queryAll = receiptsQuery.Union(receiptWithNoItems);
+
+                if (query.FromDate != null)
+                {
+                    queryAll = queryAll.Where(d => d.Date >= query.FromDate.Value);
+                }
+
+                if (query.ToDate != null)
+                {
+                    queryAll = queryAll.Where(d => d.Date <= query.ToDate.Value);
+                }
+
+                if (query.DocumentNumbers != null && query.DocumentNumbers.Count != 0)
+                {
+                    queryAll = queryAll.Where(d => query.DocumentNumbers.Contains(d.Number));
+                }
+
+                if (query.ResourceIds != null && query.ResourceIds.Count != 0)
+                {
+                    queryAll = queryAll.Where(d => query.ResourceIds.Contains(d.ReceptItem.Resource.Id));
+                }
+
+                if (query.MeasurementIds != null && query.MeasurementIds.Count != 0)
+                {
+                    queryAll = queryAll.Where(d => query.MeasurementIds.Contains(d.ReceptItem.Measurement.Id));
+                }
+
+                IQueryable<ReceiptDocumentItemDto> receiptsWithEmptyQuery = queryAll.OrderBy(d => d.Id);
 
                 var count = await receiptsWithEmptyQuery.CountAsync();
 

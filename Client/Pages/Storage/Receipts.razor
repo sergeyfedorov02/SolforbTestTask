@@ -7,8 +7,15 @@
 <PageTitle>Поступления</PageTitle>
 
 <RadzenStack Gap="1rem">
+     <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" AlignItems="AlignItems.Center">
+        <RadzenDatePicker @bind-Value=@fromDate />
+        <RadzenDatePicker @bind-Value=@toDate />
+    </RadzenStack> 
+
     <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" AlignItems="AlignItems.Center">
         <RadzenButton Text="Добавить" Icon="add" Click="@CreateReceiptDocumentDialogBox" />
+        <RadzenButton Text="Применить" Icon="refresh" Click="@(_ => grid.Reload())" MouseEnter="@(args => ShowTooltip(args, "Обновить данные"))" />
+        <RadzenButton Text="Сбросить фильтры" Disabled="@IsResetFiltersDisabled()" Icon="filter_alt_off" Click="@ResetFilters" MouseEnter="@(args => ShowTooltip(args, "Cбросить фильтры"))" />
     </RadzenStack>
 
     <LocalizedDataGrid @ref=@grid
@@ -22,7 +29,7 @@
                        AllowMultiColumnSorting="false"
                        PageSizeOptions="@pageSizeOptions"
                        ShowPagingSummary="true"
-                       AllowFiltering="true" AllowSorting="true" AllowColumnResize="true"
+                       AllowFiltering="false" AllowSorting="false" AllowColumnResize="true"
                        AllowGrouping="false"
                        AllowColumnPicking="false"
                        AllowColumnReorder="false"
@@ -30,13 +37,6 @@
                        RowDoubleClick="OnRowDoubleClick"
                        FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                        AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" PageSize="@pageSize">
-        <HeaderTemplate>
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="1rem;" Wrap="FlexWrap.Wrap">
-                @* <RadzenButton Icon="add" Click="@CreateOrder" MouseEnter="@(args => ShowTooltip(args, "Создать заказ"))" />  *@
-                <RadzenButton Icon="refresh" Click="@(_ => grid.Reload())" MouseEnter="@(args => ShowTooltip(args, "Обновить данные"))" />
-                <RadzenButton Icon="filter_alt_off" Click="@ResetFiltersAsync" MouseEnter="@(args => ShowTooltip(args, "Cбросить фильтры"))" />
-            </RadzenStack>
-        </HeaderTemplate>
         <PagingSummaryTemplate>
             Страница @context.CurrentPage из @context.NumberOfPages <b>(Всего @context.TotalCount записей)</b>
         </PagingSummaryTemplate>

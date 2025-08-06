@@ -81,6 +81,9 @@ namespace SolforbTestTask.Client.Pages.Storage
             return groupFirstItem.Date.ToString("dd.MM.yyyy");
         }
 
+        private DateOnly? fromDate = DateOnly.FromDateTime(DateTime.Now).AddDays(-7);
+        private DateOnly? toDate = DateOnly.FromDateTime(DateTime.Now).AddDays(7);
+
         /// <summary>
         /// Подгрузка элементов в гриде/таблице
         /// </summary>
@@ -90,12 +93,15 @@ namespace SolforbTestTask.Client.Pages.Storage
         {
             isLoading = true;
 
-            var result = await StorageService.GetReceptDocumentItems(new FilterDto
+            var result = await StorageService.GetReceptDocumentItems(new FilterReceiptItemsDto
             {
                 Skip = args.Skip,
                 Top = args.Top,
-                Filter = args.Filter,
-                OrderBy = args.OrderBy
+                FromDate = fromDate,
+                ToDate = toDate,
+                //DocumentNumbers = [ "123", "12345" ]
+                //ResourceIds = [3]
+                //MeasurementIds = [3]
             });
 
             if (result.Success)
@@ -145,6 +151,11 @@ namespace SolforbTestTask.Client.Pages.Storage
             var gg = 0;
         }
 
+        private bool IsResetFiltersDisabled()
+        {
+            return fromDate == null && toDate == null;
+        }
+
         /// <summary>
         /// Двойное нажатие на любой элемент внутри группы
         /// </summary>
@@ -170,14 +181,12 @@ namespace SolforbTestTask.Client.Pages.Storage
         /// Реализация метода сброса всех фильтров
         /// </summary>
         /// <returns></returns>
-        protected async Task ResetFiltersAsync()
+        protected void ResetFilters()
         {
-            foreach (var c in grid.ColumnsCollection)
-            {
-                c.ClearFilters();
-            }
+            fromDate = null;
+            toDate = null;
 
-            await grid.Reload();
+            StateHasChanged();
         }
 
         /// <summary>

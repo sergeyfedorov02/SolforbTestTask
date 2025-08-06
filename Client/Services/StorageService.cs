@@ -42,7 +42,7 @@ namespace SolforbTestTask.Client.Services
         /// </summary>
         /// <param name="filterDto"></param>
         /// <returns></returns>
-        public async Task<DataResultDto<GridResultDto<ReceiptDocumentItemDto>>> GetReceptDocumentItems(FilterDto filterDto)
+        public async Task<DataResultDto<GridResultDto<ReceiptDocumentItemDto>>> GetReceptDocumentItems(FilterReceiptItemsDto filterDto)
         {
             try
             {

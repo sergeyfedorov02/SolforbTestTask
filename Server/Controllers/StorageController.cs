@@ -57,15 +57,9 @@ namespace SolforbTestTask.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BalanceDto>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<GridResultDto<ReceiptDocumentItemDto>>> GetReceptDocumentItems(FilterDto filterDto)
+        public async Task<ActionResult<GridResultDto<ReceiptDocumentItemDto>>> GetReceptDocumentItems(FilterReceiptItemsDto filterDto)
         {
-            var result = await _storageService.GetReceiptDocumentItemsAsync(new Query
-            {
-                Skip = filterDto.Skip,
-                Top = filterDto.Top,
-                Filter = filterDto.Filter,
-                OrderBy = filterDto.OrderBy,
-            });
+            var result = await _storageService.GetReceiptDocumentItemsAsync(filterDto);
 
             if (!result.Success)
             {
