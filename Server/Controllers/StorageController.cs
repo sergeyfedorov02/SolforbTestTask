@@ -101,12 +101,18 @@ namespace SolforbTestTask.Server.Controllers
         /// Получение ReceiptsDocument.Number для фильтров
         /// </summary>
         /// <returns></returns>
-        [HttpGet("getReceiptsDocumentNumbersFilter")]
+        [HttpPost("getReceiptsDocumentNumbersFilter")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<string>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<List<string>>> GetReceiptsDocumentNumbersFilter()
+        public async Task<ActionResult<List<string>>> GetReceiptsDocumentNumbersFilter(FilterDto filterDto)
         {
-            var result = await _storageService.GetReceiptsDocumentNumbersFilterAsync();
+            var result = await _storageService.GetReceiptsDocumentNumbersFilterAsync(new Query
+            {
+                Skip = filterDto.Skip,
+                Top = filterDto.Top,
+                Filter = filterDto.Filter,
+                OrderBy = filterDto.OrderBy,
+            });
 
             if (!result.Success)
             {
@@ -121,12 +127,18 @@ namespace SolforbTestTask.Server.Controllers
         /// Получение Resource для фильтров
         /// </summary>
         /// <returns></returns>
-        [HttpGet("getResourcesFilter")]
+        [HttpPost("getResourcesFilter")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<string>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<List<string>>> GetResourcesFilter()
+        public async Task<ActionResult<List<string>>> GetResourcesFilter(FilterDto filterDto)
         {
-            var result = await _storageService.GetResourcesFilterAsync();
+            var result = await _storageService.GetResourcesFilterAsync(new Query
+            {
+                Skip = filterDto.Skip,
+                Top = filterDto.Top,
+                Filter = filterDto.Filter,
+                OrderBy = filterDto.OrderBy,
+            });
 
             if (!result.Success)
             {
@@ -141,12 +153,18 @@ namespace SolforbTestTask.Server.Controllers
         /// Получение Measurement для фильтров
         /// </summary>
         /// <returns></returns>
-        [HttpGet("getMeasurementsFilter")]
+        [HttpPost("getMeasurementsFilter")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<string>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<List<string>>> GetMeasurementsFilter()
+        public async Task<ActionResult<List<string>>> GetMeasurementsFilter(FilterDto filterDto)
         {
-            var result = await _storageService.GetMeasurementsFilterAsync();
+            var result = await _storageService.GetMeasurementsFilterAsync(new Query
+            {
+                Skip = filterDto.Skip,
+                Top = filterDto.Top,
+                Filter = filterDto.Filter,
+                OrderBy = filterDto.OrderBy,
+            });
 
             if (!result.Success)
             {

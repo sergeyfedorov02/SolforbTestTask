@@ -90,23 +90,23 @@ namespace SolforbTestTask.Client.Services
         /// Получение Numbers для фильтрации
         /// </summary>
         /// <returns></returns>
-        public async Task<DataResultDto<List<string>>> GetReceiptsDocumentNumbersFilterAsync()
+        public async Task<DataResultDto<GridResultDto<string>>> GetReceiptsDocumentNumbersFilterAsync(FilterDto filterDto)
         {
             try
             {
-                var x = await _httpClient.GetAsync("api/storage/getReceiptsDocumentNumbersFilter");
+                var x = await _httpClient.PostAsJsonAsync("api/storage/getReceiptsDocumentNumbersFilter", filterDto);
 
                 if (!x.IsSuccessStatusCode)
                 {
                     throw new Exception($"Ошибка при получении номеров документов: {x.StatusCode}");
                 }
 
-                var data = await x.Content.ReadFromJsonAsync<List<string>>();
-                return DataResultDto<List<string>>.CreateFromData(data);
+                var data = await x.Content.ReadFromJsonAsync<GridResultDto<string>>();
+                return DataResultDto<GridResultDto<string>>.CreateFromData(data);
             }
             catch (Exception ex)
             {
-                return DataResultDto<List<string>>.CreateFromException(ex);
+                return DataResultDto<GridResultDto<string>>.CreateFromException(ex);
             }
         }
 
@@ -114,23 +114,23 @@ namespace SolforbTestTask.Client.Services
         /// Получение Resources для фильтрации
         /// </summary>
         /// <returns></returns>
-        public async Task<DataResultDto<List<ResourceDto>>> GetResourcesFilterAsync()
+        public async Task<DataResultDto<GridResultDto<ResourceDto>>> GetResourcesFilterAsync(FilterDto filterDto)
         {
             try
             {
-                var x = await _httpClient.GetAsync("api/storage/getResourcesFilter");
+                var x = await _httpClient.PostAsJsonAsync("api/storage/getResourcesFilter", filterDto);
 
                 if (!x.IsSuccessStatusCode)
                 {
                     throw new Exception($"Ошибка при получении ресурсов для фильтров: {x.StatusCode}");
                 }
 
-                var data = await x.Content.ReadFromJsonAsync<List<ResourceDto>>();
-                return DataResultDto<List<ResourceDto>>.CreateFromData(data);
+                var data = await x.Content.ReadFromJsonAsync<GridResultDto<ResourceDto>>();
+                return DataResultDto<GridResultDto<ResourceDto>>.CreateFromData(data);
             }
             catch (Exception ex)
             {
-                return DataResultDto<List<ResourceDto>>.CreateFromException(ex);
+                return DataResultDto<GridResultDto<ResourceDto>>.CreateFromException(ex);
             }
         }
 
@@ -138,23 +138,23 @@ namespace SolforbTestTask.Client.Services
         /// Получение Measurements для фильтрации
         /// </summary>
         /// <returns></returns>
-        public async Task<DataResultDto<List<MeasurementDto>>> GetMeasurementsFilterAsync()
+        public async Task<DataResultDto<GridResultDto<MeasurementDto>>> GetMeasurementsFilterAsync(FilterDto filterDto)
         {
             try
             {
-                var x = await _httpClient.GetAsync("api/storage/getMeasurementsFilter");
+                var x = await _httpClient.PostAsJsonAsync("api/storage/getMeasurementsFilter", filterDto);
 
                 if (!x.IsSuccessStatusCode)
                 {
                     throw new Exception($"Ошибка при получении единиц измерения для фильтров: {x.StatusCode}");
                 }
 
-                var data = await x.Content.ReadFromJsonAsync<List<MeasurementDto>>();
-                return DataResultDto<List<MeasurementDto>>.CreateFromData(data);
+                var data = await x.Content.ReadFromJsonAsync<GridResultDto<MeasurementDto>>();
+                return DataResultDto<GridResultDto<MeasurementDto>>.CreateFromData(data);
             }
             catch (Exception ex)
             {
-                return DataResultDto<List<MeasurementDto>>.CreateFromException(ex);
+                return DataResultDto<GridResultDto<MeasurementDto>>.CreateFromException(ex);
             }
         }
     }

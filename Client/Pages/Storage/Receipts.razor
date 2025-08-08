@@ -23,8 +23,11 @@
             <RadzenLabel Text="Номера документов" Style="font-weight: 500; margin-bottom: 4px; text-align: center;" />
             <RadzenDropDown @bind-Value=@selectedDocumentNumbers
                             Data=@currentDocumentNumbers
+                            Count="@countDocumentNumbers"
+                            LoadData=@LoadDataFilterDocumentNumbers
                             AllowVirtualization="true"
                             Multiple=true
+                            AllowFiltering=false
                             AllowClear=true
                             Placeholder="Все"
                             Chips=true
@@ -36,11 +39,14 @@
         <RadzenStack Gap="0.25rem" Style="min-width: 220px;">
             <RadzenLabel Text="Ресурсы" Style="font-weight: 500; margin-bottom: 4px; text-align: center;" />
             <RadzenDropDown @bind-Value=@selectedResources
+                            Data=@currentResources
                             TextProperty="@nameof(ResourceDto.Name)"
                             ValueProperty="@nameof(ResourceDto.Id)"
-                            Data=@currentResources
-                            AllowVirtualization="true"
+                            Count="@countResources"
+                            LoadData=@LoadDataFilterResources
+                            AllowVirtualization=true
                             Multiple=true
+                            AllowFiltering=false
                             AllowClear=true
                             Placeholder="Все"
                             Chips=true
@@ -51,12 +57,15 @@
         <!-- Фильтр по Единицам измерения -->
         <RadzenStack Gap="0.25rem" Style="min-width: 220px;">
             <RadzenLabel Text="Единицы измерения" Style="font-weight: 500; margin-bottom: 4px; text-align: center;" />
-            <RadzenDropDown @bind-Value=@selectedMeasurementIds
+            <RadzenDropDown @bind-Value=@selectedMeasurements
                             Data=@currentMeasurements
                             TextProperty="@nameof(MeasurementDto.Name)"
                             ValueProperty="@nameof(MeasurementDto.Id)"
+                            Count="@countMeasurements"
+                            LoadData=@LoadDataFilterMeasurements
                             AllowVirtualization="true"
                             Multiple=true
+                            AllowFiltering=false
                             AllowClear=true
                             Placeholder="Все"
                             Chips=true
@@ -71,7 +80,7 @@
         <RadzenButton Text="Сбросить фильтры" Disabled="@IsResetFiltersDisabled()" Icon="filter_alt_off" Click="@ResetFilters" MouseEnter="@(args => ShowTooltip(args, "Cбросить фильтры"))" />
     </RadzenStack>
 
-    <LocalizedDataGrid @ref=@grid
+     <LocalizedDataGrid @ref=@grid
                        Style="width:80%"
                        Data="@receipts" Count="@count" TItem="ReceiptDocumentItemDto" LoadData="@LoadData"
                        ColumnWidth="140px"
@@ -100,7 +109,7 @@
         </GroupHeaderTemplate>
         <Columns>
             @* <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="Number" Title="Номер" FilterMode="FilterMode.CheckBoxList" />
-            <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="Date" Title="Дата" /> *@
+            <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="Date" Title="Дата" />  *@
             <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="ReceptItem.Resource.Name" Title="Ресурс" />
             <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="ReceptItem.Measurement.Name" Title="Единица измерения" />
             <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="ReceptItem.Count" Title="Количество" />

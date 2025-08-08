@@ -50,12 +50,16 @@ namespace SolforbTestTask.Client.Pages.Storage
         // состояния для фильтров
         private IEnumerable<string> selectedDocumentNumbers = [];
         private IEnumerable<long> selectedResources = [];
-        private IEnumerable<long> selectedMeasurementIds = [];
+        private IEnumerable<long> selectedMeasurements = [];
 
-        // данные для фильтров (все значения)
+        // данные для фильтров (текущие значения -> постепенная подгрузка)
         private List<string> currentDocumentNumbers = [];
         private List<ResourceDto> currentResources = [];
         private List<MeasurementDto> currentMeasurements = [];
+
+        private int countDocumentNumbers;
+        private int countResources;
+        private int countMeasurements;
 
         /// <summary>
         /// инициализация данных и фильтров
@@ -65,6 +69,7 @@ namespace SolforbTestTask.Client.Pages.Storage
         {
             await base.OnInitializedAsync();
 
+            // чтобы работали фильтры с учетом вирутализации (постепенная подгрузка)
             await LoadFilterDataAsync();
         }
 
@@ -75,24 +80,75 @@ namespace SolforbTestTask.Client.Pages.Storage
         private async Task LoadFilterDataAsync()
         {
             // номера документов
-            var docsResult = await StorageService.GetReceiptsDocumentNumbersFilterAsync();
-            if (docsResult.Success)
-            {
-                currentDocumentNumbers = docsResult.Data;
-            }
+            await LoadDataFilterDocumentNumbers(new LoadDataArgs { Top = 1 });
 
             // ресурсы
-            var resResult = await StorageService.GetResourcesFilterAsync();
-            if (resResult.Success)
-            {
-                currentResources = resResult.Data;
-            }
+            await LoadDataFilterResources(new LoadDataArgs { Top = 1 });
 
             // единицы измерения
-            var measResult = await StorageService.GetMeasurementsFilterAsync();
+            await LoadDataFilterMeasurements(new LoadDataArgs { Top = 1 });
+        }
+
+        /// <summary>
+        /// данные для фильтра по DocumentNumbers
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        protected async Task LoadDataFilterDocumentNumbers(LoadDataArgs args)
+        {
+            var docResult = await StorageService.GetReceiptsDocumentNumbersFilterAsync(new FilterDto
+            {
+                Skip = args.Skip,
+                Top = args.Top ?? 1
+            });
+
+
+            if (docResult.Success)
+            {
+                currentDocumentNumbers = docResult.Data.Data;
+                countDocumentNumbers = docResult.Data.Count;
+            }
+        }
+
+        /// <summary>
+        /// данные для фильтра по Resource
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        protected async Task LoadDataFilterResources(LoadDataArgs args)
+        {
+            var resResult = await StorageService.GetResourcesFilterAsync(new FilterDto
+            {
+                Skip = args.Skip,
+                Top = args.Top ?? 1
+            });
+
+
+            if (resResult.Success)
+            {
+                currentResources = resResult.Data.Data;
+                countResources = resResult.Data.Count;
+            }
+        }
+
+        /// <summary>
+        /// данные для фильтра по Measurement
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        protected async Task LoadDataFilterMeasurements(LoadDataArgs args)
+        {
+            var measResult = await StorageService.GetMeasurementsFilterAsync(new FilterDto
+            {
+                Skip = args.Skip,
+                Top = args.Top ?? 1
+            });
+
+
             if (measResult.Success)
             {
-                currentMeasurements = measResult.Data;
+                currentMeasurements = measResult.Data.Data;
+                countMeasurements = measResult.Data.Count;
             }
         }
 
@@ -151,7 +207,7 @@ namespace SolforbTestTask.Client.Pages.Storage
                 ToDate = toDate,
                 DocumentNumbers = [.. selectedDocumentNumbers],
                 ResourceIds = [.. selectedResources],
-                MeasurementIds = [.. selectedMeasurementIds],
+                MeasurementIds = [.. selectedMeasurements],
             });
 
             if (result.Success)
@@ -206,7 +262,7 @@ namespace SolforbTestTask.Client.Pages.Storage
             return fromDate == null && toDate == null &&
                 !selectedDocumentNumbers.Any() &&
                 !selectedResources.Any() &&
-                !selectedMeasurementIds.Any(); 
+                !selectedMeasurements.Any(); 
         }
 
         /// <summary>
@@ -241,7 +297,7 @@ namespace SolforbTestTask.Client.Pages.Storage
 
             selectedDocumentNumbers = [];
             selectedResources = [];
-            selectedMeasurementIds = [];
+            selectedMeasurements = [];
 
             StateHasChanged();
         }

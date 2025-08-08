@@ -167,6 +167,50 @@ namespace SolforbTestTask.Server.Services
             }
         }
 
+        /// <summary>
+        /// Валидация ресурсов и единиц измерения
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="receiptDocumentDto"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        private async Task ValidateReceiptDocument(SolforbDBContext context, ReceiptDocumentDto receiptDocumentDto)
+        {
+            var receiptResources = receiptDocumentDto.ReceiptResources ?? [];
+
+            if (receiptResources.Count != 0)
+            {
+                // для ресурсов
+                var resourceIds = new HashSet<long>(receiptResources.Select(r => r.Resource.Id));
+
+                var existingResources = new HashSet<long>(await context.Resources.Where(r => resourceIds.Contains(r.Id) && r.Status == 1)
+                    .Select(r => r.Id)
+                    .ToListAsync());
+
+                resourceIds.ExceptWith(existingResources);
+
+                if (resourceIds.Count > 0)
+                {
+                    throw new ArgumentException($"Ресурсы с Id = {string.Join(',', resourceIds)} не найдены");
+                }
+
+
+                // для единиц измерения
+                var measurementIds = new HashSet<long>(receiptResources.Select(r => r.Measurement.Id));
+
+                var existingMeasurements = new HashSet<long>(await context.Measurements.Where(m => measurementIds.Contains(m.Id) && m.Status == 1)
+                    .Select(m => m.Id)
+                    .ToListAsync());
+
+                measurementIds.ExceptWith(existingMeasurements);
+
+                if (measurementIds.Count > 0)
+                {
+                    throw new ArgumentException($"Единицы измерения с Id = {string.Join(',', measurementIds)} не найдены");
+                }
+            }
+        }
+
         public async Task<ResultDto> CreateReceiptDocumentAsync(ReceiptDocumentDto receiptDocumentDto)
         {
             const int maxRetryAttempts = 3;
@@ -195,27 +239,12 @@ namespace SolforbTestTask.Server.Services
                     context.ReceiptsDocuments.Add(receiptDocument);
                     await context.SaveChangesAsync();
 
+                    // проверка ресурсов и единиц измерения для ReceiptResource
+                    await ValidateReceiptDocument(context, receiptDocumentDto);
+                    
                     // ReceiptResource
                     foreach (var receiptResourceDto in receiptDocumentDto.ReceiptResources ?? [])
                     {
-                        // Проверка для Ресурса
-                        var resourceExists = await context.Resources
-                            .AnyAsync(r => r.Id == receiptResourceDto.Resource.Id && r.Status == 1);
-
-                        if (!resourceExists)
-                        {
-                            throw new ArgumentException($"Ресурс с Id = {receiptResourceDto.Resource.Id} не найден");
-                        }
-
-                        // Проверка для Единицы Измерения
-                        var measurementExists = await context.Measurements
-                            .AnyAsync(m => m.Id == receiptResourceDto.Measurement.Id && m.Status == 1);
-
-                        if (!measurementExists)
-                        {
-                            throw new ArgumentException($"Единица измерения с Id = {receiptResourceDto.Measurement.Id} не найдена");
-                        }
-
                         var receiptResource = new ReceiptsResource
                         {
                             DocumentId = receiptDocument.Id,
@@ -291,22 +320,23 @@ namespace SolforbTestTask.Server.Services
         /// Получение номеров документов для фильтров ReceiptsDocument
         /// </summary>
         /// <returns></returns>
-        public async Task<DataResultDto<List<string>>> GetReceiptsDocumentNumbersFilterAsync()
+        public async Task<DataResultDto<GridResultDto<string>>> GetReceiptsDocumentNumbersFilterAsync(Query query)
         {
             try
             {
                 await using var context = ContextProvider();
 
-                var documentNumbers = await context.ReceiptsDocuments
-                    .Where(d => d.Number != null && d.Number != "")
-                    .Select(d => d.Number)
-                    .ToListAsync();
+                var result = await context.ReceiptsDocuments.GetDataAsync(query, "Id asc");               
 
-                return DataResultDto<List<string>>.CreateFromData(documentNumbers);
+                return DataResultDto<GridResultDto<string>>.CreateFromData(new GridResultDto<string>
+                {
+                    Data = [.. result.Value.Select(d => d.Number)],
+                    Count = result.Count
+                });
             }
             catch (Exception ex)
             {
-                return DataResultDto<List<string>>.CreateFromException(ex);
+                return DataResultDto<GridResultDto<string>>.CreateFromException(ex);
             }
         }
 
@@ -314,25 +344,27 @@ namespace SolforbTestTask.Server.Services
         /// Получение Resources для фильтров ReceiptsDocument
         /// </summary>
         /// <returns></returns>
-        public async Task<DataResultDto<List<ResourceDto>>> GetResourcesFilterAsync()
+        public async Task<DataResultDto<GridResultDto<ResourceDto>>> GetResourcesFilterAsync(Query query)
         {
             try
             {
                 await using var context = ContextProvider();
-                var result = await context.Resources.ToListAsync();
+                var result = await context.Resources.GetDataAsync(query, "Id asc");
 
-                return DataResultDto<List<ResourceDto>>.CreateFromData(
-                    [.. result.Select(v=>new ResourceDto
+                return DataResultDto<GridResultDto<ResourceDto>>.CreateFromData(new GridResultDto<ResourceDto>
+                {
+                    Data = [.. result.Value.Select(v=>new ResourceDto
                     {
                         Id = v.Id,
                         Name = v.Name,
                         Status = v.Status
-                    })]
-                );
+                    })],
+                    Count = result.Count
+                });
             }
             catch (Exception ex)
             {
-                return DataResultDto<List<ResourceDto>>.CreateFromException(ex);
+                return DataResultDto<GridResultDto<ResourceDto>>.CreateFromException(ex);
             }
         }
 
@@ -340,26 +372,28 @@ namespace SolforbTestTask.Server.Services
         /// Получение Measurements для фильтров ReceiptsDocument
         /// </summary>
         /// <returns></returns>
-        public async Task<DataResultDto<List<MeasurementDto>>> GetMeasurementsFilterAsync()
+        public async Task<DataResultDto<GridResultDto<MeasurementDto>>> GetMeasurementsFilterAsync(Query query)
         {
             try
             {
                 await using var context = ContextProvider();
 
-                var result = await context.Measurements.ToListAsync();
+                var result = await context.Measurements.GetDataAsync(query, "Id asc");
 
-                return DataResultDto<List<MeasurementDto>>.CreateFromData(
-                    [.. result.Select(v=>new MeasurementDto
+                return DataResultDto<GridResultDto<MeasurementDto>>.CreateFromData(new GridResultDto<MeasurementDto>
+                {
+                    Data = [.. result.Value.Select(v=>new MeasurementDto
                     {
                         Id = v.Id,
                         Name = v.Name,
                         Status = v.Status
-                    })]
-                );
+                    })],
+                    Count = result.Count
+                });
             }
             catch (Exception ex)
             {
-                return DataResultDto<List<MeasurementDto>>.CreateFromException(ex);
+                return DataResultDto<GridResultDto<MeasurementDto>>.CreateFromException(ex);
             }
         }
     }

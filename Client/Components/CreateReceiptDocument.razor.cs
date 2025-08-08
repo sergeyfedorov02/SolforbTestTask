@@ -1,9 +1,7 @@
 ﻿using DataContracts;
 using Microsoft.AspNetCore.Components;
 using Radzen;
-using SolforbTestTask.Client.Pages.Directory;
 using SolforbTestTask.Client.Services;
-using static System.Net.WebRequestMethods;
 
 namespace SolforbTestTask.Client.Components
 {
