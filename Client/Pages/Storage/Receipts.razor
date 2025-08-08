@@ -7,10 +7,63 @@
 <PageTitle>Поступления</PageTitle>
 
 <RadzenStack Gap="1rem">
-     <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" AlignItems="AlignItems.Center">
-        <RadzenDatePicker @bind-Value=@fromDate />
-        <RadzenDatePicker @bind-Value=@toDate />
-    </RadzenStack> 
+    <RadzenStack Orientation="Orientation.Horizontal" Gap="1.5rem" AlignItems="AlignItems.Start" Style="flex-wrap: nowrap; overflow-x: auto; padding-bottom: 10px;">
+        <!-- Блок периода -->
+        <RadzenStack Gap="0.25rem" Style="min-width: 220px;">
+            <RadzenLabel Text="Период" Style="font-weight: 500; margin-bottom: 4px; width: 100%; text-align: center;" />
+            <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center">
+                <RadzenDatePicker @bind-Value=@fromDate Style="width: 150px;" />
+                <span>-</span>
+                <RadzenDatePicker @bind-Value=@toDate Style="width: 150px;" />
+            </RadzenStack>
+        </RadzenStack>
+
+        <!-- Фильтр по номерам документов -->
+        <RadzenStack Gap="0.25rem" Style="min-width: 220px;">
+            <RadzenLabel Text="Номера документов" Style="font-weight: 500; margin-bottom: 4px; text-align: center;" />
+            <RadzenDropDown @bind-Value=@selectedDocumentNumbers
+                            Data=@currentDocumentNumbers
+                            AllowVirtualization="true"
+                            Multiple=true
+                            AllowClear=true
+                            Placeholder="Все"
+                            Chips=true
+                            Style="width: 100%;">
+            </RadzenDropDown>
+        </RadzenStack>
+
+        <!-- Фильтр по Ресурсам -->
+        <RadzenStack Gap="0.25rem" Style="min-width: 220px;">
+            <RadzenLabel Text="Ресурсы" Style="font-weight: 500; margin-bottom: 4px; text-align: center;" />
+            <RadzenDropDown @bind-Value=@selectedResources
+                            TextProperty="@nameof(ResourceDto.Name)"
+                            ValueProperty="@nameof(ResourceDto.Id)"
+                            Data=@currentResources
+                            AllowVirtualization="true"
+                            Multiple=true
+                            AllowClear=true
+                            Placeholder="Все"
+                            Chips=true
+                            Style="width: 100%;">
+            </RadzenDropDown>
+        </RadzenStack>
+
+        <!-- Фильтр по Единицам измерения -->
+        <RadzenStack Gap="0.25rem" Style="min-width: 220px;">
+            <RadzenLabel Text="Единицы измерения" Style="font-weight: 500; margin-bottom: 4px; text-align: center;" />
+            <RadzenDropDown @bind-Value=@selectedMeasurementIds
+                            Data=@currentMeasurements
+                            TextProperty="@nameof(MeasurementDto.Name)"
+                            ValueProperty="@nameof(MeasurementDto.Id)"
+                            AllowVirtualization="true"
+                            Multiple=true
+                            AllowClear=true
+                            Placeholder="Все"
+                            Chips=true
+                            Style="width: 100%;">
+            </RadzenDropDown>
+        </RadzenStack>
+    </RadzenStack>
 
     <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" AlignItems="AlignItems.Center">
         <RadzenButton Text="Добавить" Icon="add" Click="@CreateReceiptDocumentDialogBox" />

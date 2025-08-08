@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SolforbTestTask.Server.Models.Entities;
+using System.Reflection.Emit;
 
 namespace SolforbTestTask.Server.Data
 {
@@ -26,6 +27,10 @@ namespace SolforbTestTask.Server.Data
             // Настройка Balance
             builder.Entity<Balance>()
                 .HasKey(r => r.Id);
+
+            builder.Entity<Balance>()
+                .Property(b => b.Count)
+                .IsConcurrencyToken();  // токен параллелизма (когда несколько пользователей вносят изменения одновременно)
 
             // Настройка ReceiptsDocument
             builder.Entity<ReceiptsDocument>()

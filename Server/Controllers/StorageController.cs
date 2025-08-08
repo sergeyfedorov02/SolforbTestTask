@@ -96,5 +96,65 @@ namespace SolforbTestTask.Server.Controllers
             }
             return Ok(true);
         }
+
+        /// <summary>
+        /// Получение ReceiptsDocument.Number для фильтров
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("getReceiptsDocumentNumbersFilter")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<string>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<List<string>>> GetReceiptsDocumentNumbersFilter()
+        {
+            var result = await _storageService.GetReceiptsDocumentNumbersFilterAsync();
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, "Ошибка при получении номеров документов для фильтров");
+                return StatusCode(500, "Ошибка при получении данных");
+            }
+
+            return Ok(result.Data);
+        }
+
+        /// <summary>
+        /// Получение Resource для фильтров
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("getResourcesFilter")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<string>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<List<string>>> GetResourcesFilter()
+        {
+            var result = await _storageService.GetResourcesFilterAsync();
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, "Ошибка при получении ресурсов для фильтров");
+                return StatusCode(500, "Ошибка при получении данных");
+            }
+
+            return Ok(result.Data);
+        }
+
+        /// <summary>
+        /// Получение Measurement для фильтров
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("getMeasurementsFilter")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<string>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<List<string>>> GetMeasurementsFilter()
+        {
+            var result = await _storageService.GetMeasurementsFilterAsync();
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, "Ошибка при получении единиц измерения для фильтров");
+                return StatusCode(500, "Ошибка при получении данных");
+            }
+
+            return Ok(result.Data);
+        }
     }
 }

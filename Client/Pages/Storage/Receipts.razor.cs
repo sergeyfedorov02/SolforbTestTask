@@ -43,6 +43,59 @@ namespace SolforbTestTask.Client.Pages.Storage
         protected int pageSize = 20;
         protected readonly IEnumerable<int> pageSizeOptions = [10, 20, 50];
 
+        // настройка базовых значений для фильтров по дате
+        private DateOnly? fromDate = DateOnly.FromDateTime(DateTime.Now).AddDays(-7);
+        private DateOnly? toDate = DateOnly.FromDateTime(DateTime.Now).AddDays(7);
+
+        // состояния для фильтров
+        private IEnumerable<string> selectedDocumentNumbers = [];
+        private IEnumerable<long> selectedResources = [];
+        private IEnumerable<long> selectedMeasurementIds = [];
+
+        // данные для фильтров (все значения)
+        private List<string> currentDocumentNumbers = [];
+        private List<ResourceDto> currentResources = [];
+        private List<MeasurementDto> currentMeasurements = [];
+
+        /// <summary>
+        /// инициализация данных и фильтров
+        /// </summary>
+        /// <returns></returns>
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+
+            await LoadFilterDataAsync();
+        }
+
+        /// <summary>
+        /// загрузка данных для фильтров
+        /// </summary>
+        /// <returns></returns>
+        private async Task LoadFilterDataAsync()
+        {
+            // номера документов
+            var docsResult = await StorageService.GetReceiptsDocumentNumbersFilterAsync();
+            if (docsResult.Success)
+            {
+                currentDocumentNumbers = docsResult.Data;
+            }
+
+            // ресурсы
+            var resResult = await StorageService.GetResourcesFilterAsync();
+            if (resResult.Success)
+            {
+                currentResources = resResult.Data;
+            }
+
+            // единицы измерения
+            var measResult = await StorageService.GetMeasurementsFilterAsync();
+            if (measResult.Success)
+            {
+                currentMeasurements = measResult.Data;
+            }
+        }
+
         /// <summary>
         /// Группировка по DocumentId для отображения по группам (GroupHeader)
         /// </summary>
@@ -81,9 +134,6 @@ namespace SolforbTestTask.Client.Pages.Storage
             return groupFirstItem.Date.ToString("dd.MM.yyyy");
         }
 
-        private DateOnly? fromDate = DateOnly.FromDateTime(DateTime.Now).AddDays(-7);
-        private DateOnly? toDate = DateOnly.FromDateTime(DateTime.Now).AddDays(7);
-
         /// <summary>
         /// Подгрузка элементов в гриде/таблице
         /// </summary>
@@ -99,9 +149,9 @@ namespace SolforbTestTask.Client.Pages.Storage
                 Top = args.Top,
                 FromDate = fromDate,
                 ToDate = toDate,
-                //DocumentNumbers = [ "123", "12345" ]
-                //ResourceIds = [3]
-                //MeasurementIds = [3]
+                DocumentNumbers = [.. selectedDocumentNumbers],
+                ResourceIds = [.. selectedResources],
+                MeasurementIds = [.. selectedMeasurementIds],
             });
 
             if (result.Success)
@@ -153,7 +203,10 @@ namespace SolforbTestTask.Client.Pages.Storage
 
         private bool IsResetFiltersDisabled()
         {
-            return fromDate == null && toDate == null;
+            return fromDate == null && toDate == null &&
+                !selectedDocumentNumbers.Any() &&
+                !selectedResources.Any() &&
+                !selectedMeasurementIds.Any(); 
         }
 
         /// <summary>
@@ -185,6 +238,10 @@ namespace SolforbTestTask.Client.Pages.Storage
         {
             fromDate = null;
             toDate = null;
+
+            selectedDocumentNumbers = [];
+            selectedResources = [];
+            selectedMeasurementIds = [];
 
             StateHasChanged();
         }

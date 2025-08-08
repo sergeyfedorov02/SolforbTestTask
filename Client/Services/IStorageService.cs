@@ -10,5 +10,9 @@ namespace SolforbTestTask.Client.Services
         Task<DataResultDto<GridResultDto<ReceiptDocumentItemDto>>> GetReceptDocumentItems(FilterReceiptItemsDto filterDto);
 
         Task<ResultDto> CreateReceiptDocumentAsync(ReceiptDocumentDto receiptDocumentDto);
+
+        Task<DataResultDto<List<string>>> GetReceiptsDocumentNumbersFilterAsync();
+        Task<DataResultDto<List<ResourceDto>>> GetResourcesFilterAsync();
+        Task<DataResultDto<List<MeasurementDto>>> GetMeasurementsFilterAsync();
     }
 }

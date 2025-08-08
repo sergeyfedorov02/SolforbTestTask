@@ -85,5 +85,77 @@ namespace SolforbTestTask.Client.Services
                 return ResultDto.CreateFromException(new Exception("Ошибка при создании ReceiptDocument от Сервера", ex));
             }
         }
+
+        /// <summary>
+        /// Получение Numbers для фильтрации
+        /// </summary>
+        /// <returns></returns>
+        public async Task<DataResultDto<List<string>>> GetReceiptsDocumentNumbersFilterAsync()
+        {
+            try
+            {
+                var x = await _httpClient.GetAsync("api/storage/getReceiptsDocumentNumbersFilter");
+
+                if (!x.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Ошибка при получении номеров документов: {x.StatusCode}");
+                }
+
+                var data = await x.Content.ReadFromJsonAsync<List<string>>();
+                return DataResultDto<List<string>>.CreateFromData(data);
+            }
+            catch (Exception ex)
+            {
+                return DataResultDto<List<string>>.CreateFromException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Получение Resources для фильтрации
+        /// </summary>
+        /// <returns></returns>
+        public async Task<DataResultDto<List<ResourceDto>>> GetResourcesFilterAsync()
+        {
+            try
+            {
+                var x = await _httpClient.GetAsync("api/storage/getResourcesFilter");
+
+                if (!x.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Ошибка при получении ресурсов для фильтров: {x.StatusCode}");
+                }
+
+                var data = await x.Content.ReadFromJsonAsync<List<ResourceDto>>();
+                return DataResultDto<List<ResourceDto>>.CreateFromData(data);
+            }
+            catch (Exception ex)
+            {
+                return DataResultDto<List<ResourceDto>>.CreateFromException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Получение Measurements для фильтрации
+        /// </summary>
+        /// <returns></returns>
+        public async Task<DataResultDto<List<MeasurementDto>>> GetMeasurementsFilterAsync()
+        {
+            try
+            {
+                var x = await _httpClient.GetAsync("api/storage/getMeasurementsFilter");
+
+                if (!x.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Ошибка при получении единиц измерения для фильтров: {x.StatusCode}");
+                }
+
+                var data = await x.Content.ReadFromJsonAsync<List<MeasurementDto>>();
+                return DataResultDto<List<MeasurementDto>>.CreateFromData(data);
+            }
+            catch (Exception ex)
+            {
+                return DataResultDto<List<MeasurementDto>>.CreateFromException(ex);
+            }
+        }
     }
 }
