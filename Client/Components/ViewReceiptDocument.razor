@@ -1,0 +1,130 @@
+﻿@using DataContracts
+
+<RadzenStack style="min-width: 100%; box-sizing: border-box;">
+    <RadzenTemplateForm TItem="ReceiptDocumentDto" Data=@editModel Submit="@OnSubmit" InvalidSubmit="@OnInvalidSubmit">
+        <RadzenFieldset Style="padding: 1.5rem;">
+            <RadzenStack Gap="1.5rem" Style="width: 100%;">
+
+                <!-- Дата -->
+                <RadzenRow AlignItems="AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="3" class="rz-text-align-start rz-text-nowrap">
+                        <RadzenLabel Text="Дата" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="9">
+                        <RadzenDatePicker Name="ReceiptDocument.Date" @bind-value="@editModel.Date" Style="width: 100%;" />
+                        <div style="margin-top: 4px;">
+                            <RadzenRequiredValidator Component="ReceiptDocument.Date" Text="Дата документа обязательна"
+                                                     Style="position: absolute; color: var(--rz-danger);" />
+                        </div>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <!-- Номер документа -->
+                <RadzenRow AlignItems="AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="3" class="rz-text-align-start rz-text-nowrap">
+                        <RadzenLabel Text="Номер документа" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="9">
+                        <RadzenTextBox MaxLength=64 Name="ReceiptDocument.Number" @bind-Value=@editModel.Number
+                                       Style="width: 100%;" aria-label="ReceiptDocument.Number" />
+                        <div style="margin-top: 4px;">
+                            <RadzenRequiredValidator Component="ReceiptDocument.Number" Text="Номер документа обязателен"
+                                                     Style="position: absolute; color: var(--rz-danger);" />
+                            <RadzenLengthValidator Max=64 Component="ReceiptDocument.Number" Text="Слишком длинный номер документа (max = 64)"
+                                                   Style="position: absolute; color: var(--rz-danger);" />
+                        </div>
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <!-- Список ресурсов -->
+                <RadzenStack Gap="1rem" Style="border: 1px solid var(--rz-border-color); padding: 1rem; border-radius: 4px;">
+                    <RadzenText Style="font-weight: 500; color: var(--rz-text-color); margin-bottom: 1rem;">Ресурсы</RadzenText>
+
+                    @foreach (var (item, index) in editModel.ReceiptResources.Select((x, i) => (x, i)))
+                    {
+                        <div style="width: 100%; background: var(--rz-base-100); padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
+                            <RadzenRow>
+                                <!-- Ресурс -->
+                                <RadzenColumn Size="12" SizeMD="5">
+                                    <RadzenLabel Text="Ресурс" Style="color: var(--rz-text-color-secondary)" />
+                                    <RadzenDropDown Data="@availableResources" @bind-Value="@item.Resource.Id" Name="AvaibleResources"
+                                                    TextProperty="Name" ValueProperty="Id" Style="width: 100%;"
+                                                    AllowClear="true" AllowFiltering="true" AllowVirtualization="@(availableResources.Count > 20)">
+                                    </RadzenDropDown>
+                                    <div style="margin-top: 4px;">
+                                        <RadzenRequiredValidator Component="AvaibleResources" Text="Ресурс обязателен"
+                                                                 Style="position: absolute; color: var(--rz-danger);" />
+                                    </div>
+                                    <RadzenRequiredValidator Style="color: var(--rz-danger)" />
+                                </RadzenColumn>
+
+                                <!-- Единица измерения -->
+                                <RadzenColumn Size="12" SizeMD="3">
+                                    <RadzenLabel Text="Единица измерения" Style="color: var(--rz-text-color-secondary)" />
+                                    <RadzenDropDown Data="@availableMeasurements" @bind-Value="@item.Measurement.Id" Name="AvaibleMeasurements"
+                                                    TextProperty="Name" ValueProperty="Id" Style="width: 100%;"
+                                                    AllowClear="true" AllowFiltering="true" AllowVirtualization="@(availableMeasurements.Count > 20)">
+                                    </RadzenDropDown>
+                                    <div style="margin-top: 4px;">
+                                        <RadzenRequiredValidator Component="AvaibleMeasurements" Text="Единица измерения обязательна"
+                                                                 Style="position: absolute; color: var(--rz-danger);" />
+                                    </div>
+                                </RadzenColumn>
+
+                                <!-- Количество -->
+                                <RadzenColumn Size="12" SizeMD="2">
+                                    <RadzenLabel Text="Количество" Style="color: var(--rz-text-color-secondary)" />
+                                    <RadzenNumeric Name="ResourceNumber" @bind-Value="@item.Count" Style="width: 100%;" Min="1" />
+                                    <div style="margin-top: 4px;">
+                                        <RadzenRequiredValidator Component="ResourceNumber" Text="Количество обязательно"
+                                                                 Style="position: absolute; color: var(--rz-danger);" />
+                                    </div>
+                                    <RadzenNumericRangeValidator Min="1" Style="color: var(--rz-danger)" />
+                                </RadzenColumn>
+
+
+                                <!-- Кнопка удаления -->
+                                <RadzenColumn Size="12" SizeMD="2" Style="display: flex; align-items: flex-end; justify-content: flex-end;">
+                                    @if (editModel.ReceiptResources.Count > 0)
+                                    {
+                                        <RadzenButton ButtonStyle="ButtonStyle.Danger"
+                                                      Icon="delete"
+                                                      Click="@(() => RemoveResource(index))"
+                                                      Tooltip="Удалить ресурс"
+                                                      Style="margin-left: 0.5rem;" />
+                                    }
+                                </RadzenColumn>
+                            </RadzenRow>
+                        </div>
+                    }
+
+                    <!-- Кнопка добавления -->
+                    <RadzenRow JustifyContent="JustifyContent.Center">
+                        <RadzenColumn Size="12" SizeMD="6" Style="display: flex; justify-content: center;">
+                            <RadzenButton ButtonStyle="ButtonStyle.Success"
+                                          Variant="Variant.Outlined"
+                                          Icon="add_circle"
+                                          Click="@AddResource"
+                                          Text="Добавить ресурс"
+                                          Style="width: 100%; max-width: 400px;" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenStack>
+
+
+                <!-- Кнопки -->
+                <RadzenRow JustifyContent="JustifyContent.Center" Style="width: 100%; margin-top: 1.5rem;">
+                    <RadzenColumn Size="12" SizeMD="4" Style="display: flex; justify-content: center;">
+                        <RadzenButton ButtonType="ButtonType.Submit" Text="Сохранить"
+                                      Style="width: 100%; max-width: 200px; margin: 0 5px;" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="4" Style="display: flex; justify-content: center;">
+                        <RadzenButton Click="@OnDelete" Text="Удалить"
+                                      Style="width: 100%; max-width: 200px; margin: 0 5px;" />
+                    </RadzenColumn>
+                </RadzenRow>
+
+            </RadzenStack>
+        </RadzenFieldset>
+    </RadzenTemplateForm>
+</RadzenStack>

@@ -108,11 +108,9 @@
             </div>            
         </GroupHeaderTemplate>
         <Columns>
-            @* <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="Number" Title="Номер" FilterMode="FilterMode.CheckBoxList" />
-            <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="Date" Title="Дата" />  *@
-            <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="ReceptItem.Resource.Name" Title="Ресурс" />
-            <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="ReceptItem.Measurement.Name" Title="Единица измерения" />
-            <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="ReceptItem.Count" Title="Количество" />
+            <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="ReceiptItem.Resource.Name" Title="Ресурс" />
+            <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="ReceiptItem.Measurement.Name" Title="Единица измерения" />
+            <RadzenDataGridColumn TItem="ReceiptDocumentItemDto" Property="ReceiptItem.Count" Title="Количество" />
         </Columns>
     </LocalizedDataGrid>
 </RadzenStack>

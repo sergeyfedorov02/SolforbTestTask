@@ -174,5 +174,53 @@ namespace SolforbTestTask.Server.Controllers
 
             return Ok(result.Data);
         }
+
+        /// <summary>
+        /// Получение ReceiptDocumentDto из одного ReceiptDocumentItemDto
+        /// </summary>
+        /// <param name="receiptDocumentItemDto"></param>
+        /// <returns></returns>
+        [HttpPost("getWholeReceiptDocument")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ReceiptDocumentDto>> GetWholeReceiptDocument([FromBody] ReceiptDocumentItemDto receiptDocumentItemDto)
+        {
+            var result = await _storageService.GetWholeReceiptDocumentAsync(receiptDocumentItemDto);
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, "Ошибка при редактировании ReceiptDocument от Сервиса");
+                return StatusCode(500, "Ошибка при редактировании ReceiptDocument от Сервиса");
+
+            }
+            return Ok(result.Data);
+        }
+
+        /// <summary>
+        /// Обновление ReceiptDocument
+        /// </summary>
+        /// <param name="receiptDocumentDto"></param>
+        /// <returns></returns>
+        [HttpPut("updateReceiptDocument")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<bool>> UpdateReceiptDocument([FromBody] ReceiptDocumentDto receiptDocumentDto)
+        {
+            if (string.IsNullOrWhiteSpace(receiptDocumentDto.Number))
+            {
+                return BadRequest("Не указан номер документа");
+            }
+
+            var result = await _storageService.UpdateReceiptDocumentAsync(receiptDocumentDto);
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, "Ошибка при создании ReceiptDocument от Сервиса");
+                return StatusCode(500, "Ошибка при создании ReceiptDocument от Сервиса");
+
+            }
+            return Ok(true);
+        }
     }
 }

@@ -42,7 +42,7 @@ namespace SolforbTestTask.Client.Services
         /// </summary>
         /// <param name="filterDto"></param>
         /// <returns></returns>
-        public async Task<DataResultDto<GridResultDto<ReceiptDocumentItemDto>>> GetReceptDocumentItems(FilterReceiptItemsDto filterDto)
+        public async Task<DataResultDto<GridResultDto<ReceiptDocumentItemDto>>> GetReceiptDocumentItems(FilterReceiptItemsDto filterDto)
         {
             try
             {
@@ -157,5 +157,53 @@ namespace SolforbTestTask.Client.Services
                 return DataResultDto<GridResultDto<MeasurementDto>>.CreateFromException(ex);
             }
         }
+
+        /// <summary>
+        /// Получение ReceiptDocumentDto из переданного ReceiptDocumentItemDto
+        /// </summary>
+        /// <param name="receiptDocumentItemDto"></param>
+        /// <returns></returns>
+        public async Task<DataResultDto<ReceiptDocumentDto>> GetWholeReceiptDocumentAsync(ReceiptDocumentItemDto receiptDocumentItemDto)
+        {
+            try
+            {
+                var x = await _httpClient.PostAsJsonAsync("api/storage/getWholeReceiptDocument", receiptDocumentItemDto);
+
+                if (!x.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Ошибка при получении полного ReceiptDocument: {x.StatusCode}");
+                }
+
+                var data = await x.Content.ReadFromJsonAsync<ReceiptDocumentDto>();
+                return DataResultDto<ReceiptDocumentDto>.CreateFromData(data);
+            }
+            catch (Exception ex)
+            {
+                return DataResultDto<ReceiptDocumentDto>.CreateFromException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Обновление ReceiptDocument
+        /// </summary>
+        /// <param name="receiptDocumentDto"></param>
+        /// <returns></returns>
+        public async Task<ResultDto> UpdateReceiptDocumentAsync(ReceiptDocumentDto receiptDocumentDto)
+        {
+            try
+            {
+                var x = await _httpClient.PutAsJsonAsync("api/storage/updateReceiptDocument", receiptDocumentDto);
+
+                if (!x.IsSuccessStatusCode)
+                {
+                    return ResultDto.CreateFromException(new Exception($"Ошибка при редактировании ReceiptDocument от Сервера статус={x.StatusCode}"));
+                }
+                return ResultDto.CreateOk();
+            }
+            catch (Exception ex)
+            {
+                return ResultDto.CreateFromException(ex);
+            }
+        }        
     }
 }

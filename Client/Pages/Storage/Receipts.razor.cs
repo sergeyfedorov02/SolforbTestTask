@@ -199,7 +199,7 @@ namespace SolforbTestTask.Client.Pages.Storage
         {
             isLoading = true;
 
-            var result = await StorageService.GetReceptDocumentItems(new FilterReceiptItemsDto
+            var result = await StorageService.GetReceiptDocumentItems(new FilterReceiptItemsDto
             {
                 Skip = args.Skip,
                 Top = args.Top,
@@ -254,7 +254,32 @@ namespace SolforbTestTask.Client.Pages.Storage
         /// <returns></returns>
         private async Task OnGroupDoubleClick(Group group)
         {
-            var gg = 0;
+            var groupFirstItem = group.Data.Items.OfType<ReceiptDocumentItemDto>().First();
+            var wholeReceiptDocument = await StorageService.GetWholeReceiptDocumentAsync(groupFirstItem);
+
+            if (wholeReceiptDocument.Success)
+            {
+                await DialogService.OpenAsync<ViewReceiptDocument>(
+                $"Редактирование документа поступления \"{GetDocumentNumber(group)}\"",
+                new Dictionary<string, object> { { "ReceiptDocumentDto", wholeReceiptDocument.Data } },
+                new DialogOptions
+                {
+                    Resizable = false,
+                    Draggable = true,
+                    Style = "min-width:1100px; min-height:600px;",
+                    CloseDialogOnOverlayClick = false
+                }
+            );
+                await grid.Reload();
+            }
+            else
+            {
+                //Logger.LogError("Ошибка при просмотре документа поступления", wholeReceiptDocument.Exception);
+                //NotificationService.Notify(
+                //    NotificationSeverity.Error,
+                //    "Ошибка",
+                //    wholeReceiptDocument.Exception?.Message ?? "Неизвестная ошибка при просмотре документа поступления");
+            }
         }
 
         private bool IsResetFiltersDisabled()
@@ -272,18 +297,31 @@ namespace SolforbTestTask.Client.Pages.Storage
         /// <returns></returns>
         private async Task OnRowDoubleClick(DataGridRowMouseEventArgs<ReceiptDocumentItemDto> args)
         {
-            var xx = 0;
-            //await DialogService.OpenAsync<ViewResource>(
-            //    $"Редактирование ресурса \"{args.Data.Name}\"",
-            //    new Dictionary<string, object> { { "ResourceDto", args.Data } },
-            //    new DialogOptions
-            //    {
-            //        Resizable = false,
-            //        Draggable = true,
-            //        CloseDialogOnOverlayClick = false
-            //    }
-            //);
-            //await grid.Reload();
+            var wholeReceiptDocument = await StorageService.GetWholeReceiptDocumentAsync(args.Data);
+
+            if (wholeReceiptDocument.Success)
+            {
+                await DialogService.OpenAsync<ViewReceiptDocument>(
+                $"Редактирование документа поступления \"{args.Data.Number}\"",
+                new Dictionary<string, object> { { "ReceiptDocumentDto", wholeReceiptDocument.Data } },
+                new DialogOptions
+                {
+                    Resizable = false,
+                    Draggable = true,
+                    Style = "min-width:1100px; min-height:600px;",
+                    CloseDialogOnOverlayClick = false
+                }
+            );
+                await grid.Reload();
+            }
+            else
+            {
+                //Logger.LogError("Ошибка при просмотре документа поступления", wholeReceiptDocument.Exception);
+                //NotificationService.Notify(
+                //    NotificationSeverity.Error,
+                //    "Ошибка",
+                //    wholeReceiptDocument.Exception?.Message ?? "Неизвестная ошибка при просмотре документа поступления");
+            }
         }
 
         /// <summary>
