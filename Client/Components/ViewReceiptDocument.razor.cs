@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Radzen;
 using SolforbTestTask.Client.Services;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 using System.Resources;
 
 namespace SolforbTestTask.Client.Components
@@ -72,11 +73,7 @@ namespace SolforbTestTask.Client.Components
             }
             else
             {
-                //Logger.LogError("Ошибка при добавлении документа поступления", result.Exception);
-                //NotificationService.Notify(
-                //    NotificationSeverity.Error,
-                //    "Ошибка",
-                //    result.Exception?.Message ?? "Неизвестная ошибка при получении списка допуступных ресурсов");
+                Logger.LogError("Ошибка при загрузке Resource для выпадающего списка в ViewReceiptDocument", result.Exception);
             }
         }
 
@@ -107,11 +104,7 @@ namespace SolforbTestTask.Client.Components
             }
             else
             {
-                //Logger.LogError("Ошибка при добавлении документа поступления", result.Exception);
-                //NotificationService.Notify(
-                //    NotificationSeverity.Error,
-                //    "Ошибка",
-                //    result.Exception?.Message ?? "Неизвестная ошибка при получении списка допуступных единиц измерения");
+                Logger.LogError("Ошибка при загрузке Measurements для выпадающего списка в ViewReceiptDocument", result.Exception);
             }
         }
 
@@ -125,11 +118,33 @@ namespace SolforbTestTask.Client.Components
             });
         }
 
-        private void RemoveResource(int index)
+        private async Task RemoveResourceAsync(int index)
         {
-            if (editModel.ReceiptResources.Count > 0)
+            // получим индекс удаляемого ReceiptResource
+            var receiptResourceId = editModel.ReceiptResources[index].Id;
+
+            // Это пустая запись -> можно удалить без последствий
+            if (receiptResourceId == 0)
             {
                 editModel.ReceiptResources.RemoveAt(index);
+                return;
+            }
+
+            // Проверим, можно ли удалять
+            var result = await StorageService.CanRemoveReceiptResourceAsync(receiptResourceId);
+
+            if (result.Success)
+            {
+                // можно -> убираем из UI (логика удаления будет в OnSubmit())
+                editModel.ReceiptResources.RemoveAt(index);
+            }
+            else
+            {
+                Logger.LogError("Невозможно удалить ReceiptResource в данном документе при обновлении", result.Exception);
+                NotificationService.Notify(
+                    NotificationSeverity.Error,
+                    "Ошибка",
+                    result.Exception?.Message ?? "Неизвестная ошибка при удалении ReceiptResource во время обновления документа поступления");
             }
         }
 
@@ -137,8 +152,6 @@ namespace SolforbTestTask.Client.Components
         {
             try
             {
-                var ff = 0;
-
                 if (editModel.ReceiptResources.Any(r => r.Resource.Id == 0 || r.Measurement.Id == 0 || r.Count <= 0))
                 {
                     NotificationService.Notify(
@@ -194,22 +207,21 @@ namespace SolforbTestTask.Client.Components
 
         private async Task OnDelete()
         {
-            var xx = 0;
-            //var result = await DirectoryService.DeleteResourceAsync(editModel.Id);
+            var result = await StorageService.DeleteReceiptDocumentAsync(editModel.Id);
 
-            //if (result.Success)
-            //{
-            //    NotificationService.Notify(NotificationSeverity.Success, "Успешно", "Ресурс удален");
-            //    DialogService.Close(editModel);
-            //}
-            //else
-            //{
-            //    Logger.LogError("Ошибка при удалении ресурса", result.Exception);
-            //    NotificationService.Notify(
-            //        NotificationSeverity.Error,
-            //        "Ошибка",
-            //        result.Exception?.Message ?? "Неизвестная ошибка при удалении ресурса");
-            //}
+            if (result.Success)
+            {
+                NotificationService.Notify(NotificationSeverity.Success, "Успешно", "Документ поступления удален");
+                DialogService.Close(editModel);
+            }
+            else
+            {
+                Logger.LogError("Ошибка при удалении документа поступления", result.Exception);
+                NotificationService.Notify(
+                    NotificationSeverity.Error,
+                    "Ошибка",
+                    result.Exception?.Message ?? "Неизвестная ошибка при удалении документа поступления");
+            }
         }
 
         private void OnInvalidSubmit()

@@ -18,5 +18,7 @@ namespace SolforbTestTask.Server.Services
         Task<DataResultDto<ReceiptDocumentDto>> GetWholeReceiptDocumentAsync(ReceiptDocumentItemDto receiptDocumentItemDto);
 
         Task<ResultDto> UpdateReceiptDocumentAsync(ReceiptDocumentDto receiptDocumentDto);
+        Task<ResultDto> CanRemoveReceiptResourceAsync(long receiptResourceId);
+        Task<ResultDto> DeleteReceiptDocumentAsync(long receiptDocumentId);
     }
 }

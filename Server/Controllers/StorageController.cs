@@ -222,5 +222,40 @@ namespace SolforbTestTask.Server.Controllers
             }
             return Ok(true);
         }
+
+        [HttpGet("canRemoveReceiptResource")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<bool>> CanRemoveReceiptResource(long receiptResourceId)
+        {
+            var result = await _storageService.CanRemoveReceiptResourceAsync(receiptResourceId);
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, "Ошибка при удалении ReceiptResource во время обновления ReceiptDocument от Сервиса");
+                return StatusCode(500, "Ошибка при удалении ReceiptResource во время обновления ReceiptDocument от Сервиса");
+
+            }
+            return Ok(true);
+        }
+
+        /// <summary>
+        /// Удаление ReceiptDocument
+        /// </summary>
+        /// <param name="receiptDocumentId"></param>
+        /// <returns></returns>
+        [HttpDelete("deleteReceiptDocument/{receiptDocumentId}")]
+        public async Task<ActionResult<bool>> DeleteReceiptDocument(long receiptDocumentId)
+        {
+            var result = await _storageService.DeleteReceiptDocumentAsync(receiptDocumentId);
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, "Ошибка при удалении ReceiptDocument");
+                return BadRequest(result.Exception?.Message);
+            }
+
+            return Ok(true);
+        }
     }
 }

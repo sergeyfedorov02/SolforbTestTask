@@ -204,6 +204,50 @@ namespace SolforbTestTask.Client.Services
             {
                 return ResultDto.CreateFromException(ex);
             }
-        }        
+        }
+
+        public async Task<ResultDto> CanRemoveReceiptResourceAsync(long receiptResourceId)
+        {
+            try
+            {
+                var x = await _httpClient.GetAsync($"api/storage/canRemoveReceiptResource?receiptResourceId={receiptResourceId}");
+
+                if (!x.IsSuccessStatusCode)
+                {
+                    return ResultDto.CreateFromException(
+                        new Exception($"Ошибка при удалении ReceiptResource во время обновления ReceiptDocument от Сервера статус={x.StatusCode}"));
+                }
+
+                return ResultDto.CreateOk();
+            }
+            catch (Exception ex)
+            {
+                return ResultDto.CreateFromException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Удаление ReceiptDocument
+        /// </summary>
+        /// <param name="receiptDocumentId"></param>
+        /// <returns></returns>
+        public async Task<ResultDto> DeleteReceiptDocumentAsync(long receiptDocumentId)
+        {
+            try
+            {
+                var x = await _httpClient.DeleteAsync($"api/storage/deleteReceiptDocument/{receiptDocumentId}");
+
+                if (!x.IsSuccessStatusCode)
+                {
+                    return ResultDto.CreateFromException(new Exception($"Ошибка при удалении ReceiptDocument от Сервера статус={x.StatusCode}"));
+                }
+
+                return ResultDto.CreateOk();
+            }
+            catch (Exception ex)
+            {
+                return ResultDto.CreateFromException(ex);
+            }
+        }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Radzen;
+using SolforbTestTask.Client.Pages.Directory;
 using SolforbTestTask.Server.Data;
 using SolforbTestTask.Server.Extensions;
 using SolforbTestTask.Server.Models.Entities;
@@ -71,6 +72,7 @@ namespace SolforbTestTask.Server.Services
                         Date = d.Date,
                         ReceiptItem = new ReceiptResourceDto
                         {
+                            Id = r.Id,
                             Resource = new ResourceDto
                             {
                                 Id = r.Resource.Id,
@@ -95,6 +97,7 @@ namespace SolforbTestTask.Server.Services
                         Date = d.Date,
                         ReceiptItem = new ReceiptResourceDto
                         {
+                            Id = 0,
                             Resource = new ResourceDto
                             {
                                 Id = 0,
@@ -298,8 +301,6 @@ namespace SolforbTestTask.Server.Services
                         Logger.LogWarning(conEx, $"Не удалось сохранить изменения после {maxRetryAttempts} попыток");
                         return ResultDto.CreateFromException(new Exception("Не удалось сохранить документ из-за конфликта параллельных изменений"));
                     }
-
-                    await Task.Delay(100 * retryCount);
                 }
                 catch (ArgumentException ex)
                 {
@@ -417,6 +418,7 @@ namespace SolforbTestTask.Server.Services
 
                 var receiptResources = result.Count == 0 ? [] : result.Select(r => new ReceiptResourceDto
                 {
+                    Id = r.Id,
                     Resource = new ResourceDto
                     {
                         Id = r.ResourceId,
@@ -469,15 +471,7 @@ namespace SolforbTestTask.Server.Services
                     throw new InvalidOperationException("Баланс не может быть отрицательным");
                 }
 
-                // если count == 0 -> удаляем эту запись
-                if (balance.Count == 0)
-                {
-                    context.Balances.Remove(balance);
-                }
-                else
-                {
-                    context.Balances.Update(balance);
-                }
+                context.Balances.Update(balance);
             }
             else if (countDiff > 0)
             {
@@ -718,8 +712,6 @@ namespace SolforbTestTask.Server.Services
                         Logger.LogWarning(conEx, $"Не удалось обновить документ поступления после {maxRetryAttempts} попыток");
                         return ResultDto.CreateFromException(new Exception("Не удалось обновить документ из-за конфликта параллельных изменений"));
                     }
-
-                    await Task.Delay(100 * retryCount);
                 }
                 catch (ArgumentException ex)
                 {
@@ -735,6 +727,112 @@ namespace SolforbTestTask.Server.Services
             }
 
             return ResultDto.CreateFromException(new Exception("Неизвестная ошибка при обновлении документа поступления"));
+        }
+
+        public async Task<ResultDto> CanRemoveReceiptResourceAsync(long receiptResourceId)
+        {
+            try
+            {
+                await using var context = ContextProvider();
+
+                // нет такой записи в ReceiptResources
+                var receiptResource = await context.ReceiptsResources.FindAsync(receiptResourceId) ?? 
+                    throw new ArgumentException($"ReceiptResources c Id = {receiptResourceId} не найден");
+
+                // проверим, что существует такой Balance
+                var balance = await context.Balances
+                    .FirstOrDefaultAsync(b => b.ResourceId == receiptResource.ResourceId && b.MeasurementId == receiptResource.MeasurementId) 
+                    ?? throw new InvalidOperationException("Попытка изменить несуществующий Balance");
+
+                // проверим, что при удалении Balance будет достаточно и не уйдет в минус
+                var balanceDiff = balance.Count - receiptResource.Count;
+                if (balanceDiff < 0)
+                {
+                    throw new InvalidOperationException("Balance не может быть отрицательным");
+                }
+
+                return ResultDto.CreateOk();
+            }
+            catch (Exception ex)
+            {
+                return ResultDto.CreateFromException(ex);
+            }
+        }
+
+        public async Task<ResultDto> DeleteReceiptDocumentAsync(long receiptDocumentId)
+        {
+            await using var context = ContextProvider();
+            await using var transaction = await context.Database.BeginTransactionAsync();
+
+            try
+            {
+
+                // ReceiptDocument уже не существует
+                var receiptDocument = await context.ReceiptsDocuments
+                    .Include(d => d.ReceiptsResources)
+                    .FirstOrDefaultAsync(d => d.Id == receiptDocumentId)
+                    ?? throw new ArgumentException("ReceiptsDocument не найден");
+
+                var errors = new List<string>();
+
+                // Проверяем, что удаление каждого ReceiptResource из данного ReceiptDocument возможно
+                foreach (var receiptResource in receiptDocument.ReceiptsResources ?? [])
+                {
+                    var result = await CanRemoveReceiptResourceAsync(receiptResource.Id);
+
+                    if (!result.Success)
+                    {
+                        errors.Add(result.Exception switch
+                        {
+                            ArgumentException ae => $"ReceiptResource с Id = {receiptResource.Id} не найден",
+
+                            InvalidOperationException ioe when ioe.Message.Contains("несуществующий Balance")
+                                => $"Не найден баланс для ReceiptResource с Id = {receiptResource.ResourceId}",
+
+                            InvalidOperationException ioe when ioe.Message.Contains("отрицательным")
+                                => $"Удаление приведет к отрицательному балансу для ReceiptResource с Id = {receiptResource.ResourceId}",
+
+                            _ => $"Ошибка при проверке ReceiptResource {receiptResource.Id}: {result.Exception?.Message}"
+                        });
+                    }
+                    else
+                    {
+                        // вносим изменения в Balance
+                        var balance = await context.Balances
+                            .FirstOrDefaultAsync(b => b.ResourceId == receiptResource.ResourceId && b.MeasurementId == receiptResource.MeasurementId);
+
+                        balance.Count -= receiptResource.Count;
+                        context.Balances.Update(balance);
+                    }
+                }
+
+                if (errors.Count > 0)
+                {
+                    await transaction.RollbackAsync();
+                    throw new InvalidOperationException($"Невозможно удалить ReceiptsDocument. {string.Join(", ", errors)}");
+                }
+
+                // удаляем все связанные ресурсы документа
+                context.ReceiptsResources.RemoveRange(receiptDocument.ReceiptsResources);
+
+                // удаляем сам документ
+                context.ReceiptsDocuments.Remove(receiptDocument);
+
+                // применяем все изменения и фиксируем транзакцию
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return ResultDto.CreateOk();
+
+            }
+            catch (InvalidOperationException e)
+            {
+                return ResultDto.CreateFromException(e);
+            }
+            catch (Exception ex)
+            {
+                return ResultDto.CreateFromException(ex);
+            }
         }
     }
 }

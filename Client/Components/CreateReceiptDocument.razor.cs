@@ -51,11 +51,7 @@ namespace SolforbTestTask.Client.Components
             }
             else
             {
-                //Logger.LogError("Ошибка при добавлении документа поступления", result.Exception);
-                //NotificationService.Notify(
-                //    NotificationSeverity.Error,
-                //    "Ошибка",
-                //    result.Exception?.Message ?? "Неизвестная ошибка при получении списка допуступных ресурсов");
+                Logger.LogError("Ошибка при загрузке Resources для выпадающего списка в CreateReceiptDocument", result.Exception);
             }
         }
 
@@ -73,11 +69,7 @@ namespace SolforbTestTask.Client.Components
             }
             else
             {
-                //Logger.LogError("Ошибка при добавлении документа поступления", result.Exception);
-                //NotificationService.Notify(
-                //    NotificationSeverity.Error,
-                //    "Ошибка",
-                //    result.Exception?.Message ?? "Неизвестная ошибка при получении списка допуступных единиц измерения");
+                Logger.LogError("Ошибка при загрузке Measurements для выпадающего списка в CreateReceiptDocument", result.Exception);
             }
         }
 
