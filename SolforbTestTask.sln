@@ -15,6 +15,31 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решен
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
+	ProjectSection(SolutionItems) = preProject
+		Images\balance_page.PNG = Images\balance_page.PNG
+		Images\balance_page_after_update_receipt.PNG = Images\balance_page_after_update_receipt.PNG
+		Images\balance_page_filter_1.PNG = Images\balance_page_filter_1.PNG
+		Images\balance_page_filter_2.PNG = Images\balance_page_filter_2.PNG
+		Images\measurement_page_work.PNG = Images\measurement_page_work.PNG
+		Images\receipt_add_1.PNG = Images\receipt_add_1.PNG
+		Images\receipt_add_2.PNG = Images\receipt_add_2.PNG
+		Images\receipt_add_fail_1.PNG = Images\receipt_add_fail_1.PNG
+		Images\receipt_add_success_1.PNG = Images\receipt_add_success_1.PNG
+		Images\receipt_add_success_2.PNG = Images\receipt_add_success_2.PNG
+		Images\receipt_filter_page.PNG = Images\receipt_filter_page.PNG
+		Images\receipt_page.PNG = Images\receipt_page.PNG
+		Images\receipt_view_page.PNG = Images\receipt_view_page.PNG
+		Images\receipt_view_page_create.PNG = Images\receipt_view_page_create.PNG
+		Images\resource_page_add.jpg = Images\resource_page_add.jpg
+		Images\resource_page_add_fail.PNG = Images\resource_page_add_fail.PNG
+		Images\resource_page_add_success.PNG = Images\resource_page_add_success.PNG
+		Images\resource_page_archived.PNG = Images\resource_page_archived.PNG
+		Images\resource_page_work.PNG = Images\resource_page_work.PNG
+		Images\resource_view_archived.PNG = Images\resource_view_archived.PNG
+		Images\resource_view_work.PNG = Images\resource_view_work.PNG
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +61,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8} = {754FC069-D67B-A9D7-50A1-8D1CA196D8F1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {12511CA1-0D3E-4C6F-A8FA-9A653AF1123D}
