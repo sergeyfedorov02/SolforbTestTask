@@ -49,5 +49,17 @@ namespace SolforbTestTask.Server.Extensions
                 Value = await items.ToListAsync()
             };
         }
+
+        public static IQueryable<T> ContainsText<T>(this IQueryable<T> query, string propertyName, string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return query;
+            }
+
+            var filterQuery = $"it => (it.{propertyName} == null ? \"\" : it.{propertyName}).ToLower().Contains(\"{text}\".ToLower())";
+
+            return query.Where(filterQuery);
+        }
     }
 }

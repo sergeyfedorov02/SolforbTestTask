@@ -110,6 +110,27 @@ namespace SolforbTestTask.Client.Services
             }
         }
 
+        /// <inheritdoc />
+        public async Task<DataResultDto<GridResultDto<BalanceDto>>> GetBalanceFiltersAsync(FilterBalanceDto filterBalanceDto)
+        {
+            try
+            {
+                var x = await _httpClient.PostAsJsonAsync("api/storage/getBalanceFilters", filterBalanceDto);
+
+                if (!x.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Ошибка при получении {filterBalanceDto.ColumnName} для фильтров: {x.StatusCode}");
+                }
+
+                var data = await x.Content.ReadFromJsonAsync<GridResultDto<BalanceDto>>();
+                return DataResultDto<GridResultDto<BalanceDto>>.CreateFromData(data);
+            }
+            catch (Exception ex)
+            {
+                return DataResultDto<GridResultDto<BalanceDto>>.CreateFromException(ex);
+            }
+        }
+
         /// <summary>
         /// Получение Resources для фильтрации
         /// </summary>

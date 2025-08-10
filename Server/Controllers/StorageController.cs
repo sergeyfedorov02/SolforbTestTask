@@ -176,6 +176,27 @@ namespace SolforbTestTask.Server.Controllers
         }
 
         /// <summary>
+        /// Получение Resource или Measurement для фильтров в Balance
+        /// </summary>
+        /// <param name="filterBalanceDto"></param>
+        /// <returns></returns>
+        [HttpPost("getBalanceFilters")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BalanceDto>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<List<BalanceDto>>> GetBalanceFilters(FilterBalanceDto filterBalanceDto)
+        {
+            var result = await _storageService.GetBalanceFiltersAsync(filterBalanceDto.ColumnName, filterBalanceDto.Filter);
+
+            if (!result.Success)
+            {
+                Logger.LogError(result.Exception, $"Ошибка при получении {filterBalanceDto.ColumnName} для фильтров в Balance");
+                return StatusCode(500, "Ошибка при получении данных");
+            }
+
+            return Ok(result.Data);
+        }
+
+        /// <summary>
         /// Получение ReceiptDocumentDto из одного ReceiptDocumentItemDto
         /// </summary>
         /// <param name="receiptDocumentItemDto"></param>

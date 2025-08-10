@@ -20,5 +20,6 @@ namespace SolforbTestTask.Server.Services
         Task<ResultDto> UpdateReceiptDocumentAsync(ReceiptDocumentDto receiptDocumentDto);
         Task<ResultDto> CanRemoveReceiptResourceAsync(long receiptResourceId);
         Task<ResultDto> DeleteReceiptDocumentAsync(long receiptDocumentId);
+        Task<DataResultDto<GridResultDto<BalanceDto>>> GetBalanceFiltersAsync(string columnName, string filter);
     }
 }

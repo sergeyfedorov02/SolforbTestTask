@@ -400,6 +400,54 @@ namespace SolforbTestTask.Server.Services
         }
 
         /// <summary>
+        /// Получение Resource или Measurement для фильтров в Balance
+        /// </summary>
+        /// <param name="columnName"></param>
+        /// <returns></returns>
+        public async Task<DataResultDto<GridResultDto<BalanceDto>>> GetBalanceFiltersAsync(string columnName, string filter)
+        {
+            try
+            {
+                await using var context = ContextProvider();
+
+                var result = new List<BalanceDto>();
+
+                var query = context.Balances.AsQueryable();
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    query = query.ContainsText(columnName, filter);
+                }
+
+                if (columnName == "Resource.Name")
+                {
+                    result = [.. query.Include(b => b.Resource).Select(b => b.Resource.Name).Distinct()
+                        .Select(p => new BalanceDto
+                        {
+                            Resource = new ResourceInStorageDto { Name = p }
+                        })];
+                }
+                else if (columnName == "Measurement.Name")
+                {
+                    result = [.. query.Include(b => b.Measurement).Select(b => b.Measurement.Name).Distinct()
+                        .Select(p => new BalanceDto
+                        {
+                            Measurement = new MeasurementInStorageDto { Name = p }
+                        })];
+                }
+
+                return DataResultDto<GridResultDto<BalanceDto>>.CreateFromData(new GridResultDto<BalanceDto>
+                {
+                    Data = [.. result],
+                    Count = result.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                return DataResultDto<GridResultDto<BalanceDto>>.CreateFromException(ex);
+            }
+        }
+
+        /// <summary>
         /// Получение ReceiptDocument из заданного ReceiptDocumentItemDto
         /// </summary>
         /// <param name="receiptDocumentItemDto"></param>

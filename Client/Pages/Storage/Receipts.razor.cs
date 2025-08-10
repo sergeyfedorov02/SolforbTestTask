@@ -205,9 +205,9 @@ namespace SolforbTestTask.Client.Pages.Storage
                 Top = args.Top,
                 FromDate = fromDate,
                 ToDate = toDate,
-                DocumentNumbers = [.. selectedDocumentNumbers],
-                ResourceIds = [.. selectedResources],
-                MeasurementIds = [.. selectedMeasurements],
+                DocumentNumbers = [.. selectedDocumentNumbers ?? []],
+                ResourceIds = [.. selectedResources ?? []],
+                MeasurementIds = [.. selectedMeasurements ?? []],
             });
 
             if (result.Success)

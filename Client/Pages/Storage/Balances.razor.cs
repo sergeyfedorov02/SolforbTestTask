@@ -46,6 +46,27 @@ namespace SolforbTestTask.Client.Pages.Storage
         protected readonly IEnumerable<int> pageSizeOptions = [10, 20, 50];
 
         /// <summary>
+        /// Загрузка значений фильтров по Resource и Measurement
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        private async Task LoadColumnFilterData(DataGridLoadColumnFilterDataEventArgs<BalanceDto> args)
+        {
+            var columnProperty = args.Column.Property;
+            var result = await StorageService.GetBalanceFiltersAsync(new FilterBalanceDto
+            {
+                ColumnName = columnProperty,
+                Filter = args.Filter
+            });
+
+            if (result.Success)
+            {
+                args.Data = result.Data.Data;
+                args.Count = result.Data.Count;
+            }
+        }
+                
+        /// <summary>
         /// Подгрузка элементов в гриде/таблице
         /// </summary>
         /// <param name="args"></param>
