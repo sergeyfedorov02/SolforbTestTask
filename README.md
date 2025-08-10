@@ -29,7 +29,7 @@ SolforbTestTask.Server.exe
 
 *https://www.radzen.com/blazor-studio/*
 
-2. Приложение является blazor-WebAssebly-приложением
+2. Приложение является blazor-WebAssembly-приложением
 3. Предполагается, что локально развернут сервер PostgreSQL. Развернуть можно в Docker,
    используя следующие команды
 
