@@ -27,9 +27,6 @@ namespace SolforbTestTask.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("getBalance")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BalanceDto>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<GridResultDto<BalanceDto>>> GetBalance(FilterDto filterDto)
         {
             var result = await _storageService.GetBalanceAsync(new Query
@@ -54,9 +51,6 @@ namespace SolforbTestTask.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("getReceiptItems")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BalanceDto>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<GridResultDto<ReceiptDocumentItemDto>>> GetReceptDocumentItems(FilterReceiptItemsDto filterDto)
         {
             var result = await _storageService.GetReceiptDocumentItemsAsync(filterDto);
@@ -76,10 +70,7 @@ namespace SolforbTestTask.Server.Controllers
         /// <param name="receiptDocumentDto"></param>
         /// <returns></returns>
         [HttpPost("createReceiptDocument")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<bool>> CreateReceiptDocument([FromBody] ReceiptDocumentDto receiptDocumentDto)
+        public async Task<ActionResult> CreateReceiptDocument([FromBody] ReceiptDocumentDto receiptDocumentDto)
         {
             if (string.IsNullOrWhiteSpace(receiptDocumentDto.Number))
             {
@@ -94,7 +85,7 @@ namespace SolforbTestTask.Server.Controllers
                 return StatusCode(500, "Ошибка при создании ReceiptDocument от Сервиса");
 
             }
-            return Ok(true);
+            return Ok();
         }
 
         /// <summary>
@@ -102,8 +93,6 @@ namespace SolforbTestTask.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("getReceiptsDocumentNumbersFilter")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<string>))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<string>>> GetReceiptsDocumentNumbersFilter(FilterDto filterDto)
         {
             var result = await _storageService.GetReceiptsDocumentNumbersFilterAsync(new Query
@@ -128,8 +117,6 @@ namespace SolforbTestTask.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("getResourcesFilter")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<string>))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<string>>> GetResourcesFilter(FilterDto filterDto)
         {
             var result = await _storageService.GetResourcesFilterAsync(new Query
@@ -154,8 +141,6 @@ namespace SolforbTestTask.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("getMeasurementsFilter")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<string>))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<string>>> GetMeasurementsFilter(FilterDto filterDto)
         {
             var result = await _storageService.GetMeasurementsFilterAsync(new Query
@@ -181,8 +166,6 @@ namespace SolforbTestTask.Server.Controllers
         /// <param name="filterBalanceDto"></param>
         /// <returns></returns>
         [HttpPost("getBalanceFilters")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BalanceDto>))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<List<BalanceDto>>> GetBalanceFilters(FilterBalanceDto filterBalanceDto)
         {
             var result = await _storageService.GetBalanceFiltersAsync(filterBalanceDto.ColumnName, filterBalanceDto.Filter);
@@ -202,8 +185,6 @@ namespace SolforbTestTask.Server.Controllers
         /// <param name="receiptDocumentItemDto"></param>
         /// <returns></returns>
         [HttpPost("getWholeReceiptDocument")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ReceiptDocumentDto>> GetWholeReceiptDocument([FromBody] ReceiptDocumentItemDto receiptDocumentItemDto)
         {
             var result = await _storageService.GetWholeReceiptDocumentAsync(receiptDocumentItemDto);
@@ -223,10 +204,7 @@ namespace SolforbTestTask.Server.Controllers
         /// <param name="receiptDocumentDto"></param>
         /// <returns></returns>
         [HttpPut("updateReceiptDocument")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<bool>> UpdateReceiptDocument([FromBody] ReceiptDocumentDto receiptDocumentDto)
+        public async Task<ActionResult> UpdateReceiptDocument([FromBody] ReceiptDocumentDto receiptDocumentDto)
         {
             if (string.IsNullOrWhiteSpace(receiptDocumentDto.Number))
             {
@@ -241,13 +219,11 @@ namespace SolforbTestTask.Server.Controllers
                 return StatusCode(500, "Ошибка при создании ReceiptDocument от Сервиса");
 
             }
-            return Ok(true);
+            return Ok();
         }
 
         [HttpGet("canRemoveReceiptResource")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<bool>> CanRemoveReceiptResource(long receiptResourceId)
+        public async Task<ActionResult> CanRemoveReceiptResource(long receiptResourceId)
         {
             var result = await _storageService.CanRemoveReceiptResourceAsync(receiptResourceId);
 
@@ -257,7 +233,7 @@ namespace SolforbTestTask.Server.Controllers
                 return StatusCode(500, "Ошибка при удалении ReceiptResource во время обновления ReceiptDocument от Сервиса");
 
             }
-            return Ok(true);
+            return Ok();
         }
 
         /// <summary>
@@ -266,7 +242,7 @@ namespace SolforbTestTask.Server.Controllers
         /// <param name="receiptDocumentId"></param>
         /// <returns></returns>
         [HttpDelete("deleteReceiptDocument/{receiptDocumentId}")]
-        public async Task<ActionResult<bool>> DeleteReceiptDocument(long receiptDocumentId)
+        public async Task<ActionResult> DeleteReceiptDocument(long receiptDocumentId)
         {
             var result = await _storageService.DeleteReceiptDocumentAsync(receiptDocumentId);
 
@@ -276,7 +252,7 @@ namespace SolforbTestTask.Server.Controllers
                 return BadRequest(result.Exception?.Message);
             }
 
-            return Ok(true);
+            return Ok();
         }
     }
 }

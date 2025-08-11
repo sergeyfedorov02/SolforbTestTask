@@ -41,13 +41,13 @@ namespace SolforbTestTask.Client.Services
         /// <summary>
         /// Создание Resource 
         /// </summary>
-        /// <param name="resourceDto"></param>
+        /// <param name="resourceName"></param>
         /// <returns></returns>
-        public async Task<ResultDto> CreateResourceAsync(ResourceDto resourceDto)
+        public async Task<ResultDto> CreateResourceAsync(string resourceName)
         {
             try
             {
-                var x = await _httpClient.PostAsJsonAsync("api/directory/createResource", resourceDto);
+                var x = await _httpClient.PostAsJsonAsync("api/directory/createResource", resourceName);
 
                 if (!x.IsSuccessStatusCode)
                 {
@@ -161,13 +161,13 @@ namespace SolforbTestTask.Client.Services
         /// <summary>
         /// Создание Measurement
         /// </summary>
-        /// <param name="measurementDto"></param>
+        /// <param name="measurementName"></param>
         /// <returns></returns>
-        public async Task<ResultDto> CreateMeasurementAsync(MeasurementDto measurementDto)
+        public async Task<ResultDto> CreateMeasurementAsync(string measurementName)
         {
             try
             {
-                var x = await _httpClient.PostAsJsonAsync("api/directory/createMeasurement", measurementDto);
+                var x = await _httpClient.PostAsJsonAsync("api/directory/createMeasurement", measurementName);
 
                 if (!x.IsSuccessStatusCode)
                 {

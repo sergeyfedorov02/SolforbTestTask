@@ -16,9 +16,9 @@ namespace SolforbTestTask.Server.Services
         /// </summary>
         private Func<SolforbDBContext> ContextProvider { get; }
 
-        private ILogger<StorageService> Logger { get; }
+        private ILogger<DirectoryService> Logger { get; }
 
-        public DirectoryService(Func<SolforbDBContext> provider, ILogger<StorageService> logger)
+        public DirectoryService(Func<SolforbDBContext> provider, ILogger<DirectoryService> logger)
         {
             ContextProvider = provider;
             Logger = logger;
@@ -53,7 +53,7 @@ namespace SolforbTestTask.Server.Services
             }
         }
 
-        public async Task<ResultDto> CreateResourceAsync(ResourceDto resourceDto)
+        public async Task<ResultDto> CreateResourceAsync(string resourceName)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace SolforbTestTask.Server.Services
 
                 var resource = new Resource
                 {
-                    Name = resourceDto.Name.Trim(),
+                    Name = resourceName.Trim(),
                     Status = 1
                 };
 
@@ -221,7 +221,7 @@ namespace SolforbTestTask.Server.Services
             }
         }
 
-        public async Task<ResultDto> CreateMeasurementAsync(MeasurementDto measurementDto)
+        public async Task<ResultDto> CreateMeasurementAsync(string measurementName)
         {
             try
             {
@@ -229,7 +229,7 @@ namespace SolforbTestTask.Server.Services
 
                 var measurement = new Measurement
                 {
-                    Name = measurementDto.Name.Trim(),
+                    Name = measurementName.Trim(),
                     Status = 1
                 };
 

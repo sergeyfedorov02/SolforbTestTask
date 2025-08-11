@@ -7,7 +7,7 @@ namespace SolforbTestTask.Server.Services
     {
         Task<DataResultDto<GridResultDto<ResourceDto>>> GetResourceAsync(Query query, int status);
 
-        Task<ResultDto> CreateResourceAsync(ResourceDto resourceDto);
+        Task<ResultDto> CreateResourceAsync(string resourceName);
 
         Task<ResultDto> UpdateResourceAsync(ResourceDto resourceDto);
 
@@ -17,7 +17,7 @@ namespace SolforbTestTask.Server.Services
 
         Task<DataResultDto<GridResultDto<MeasurementDto>>> GetMeasurementAsync(Query query, int status);
 
-        Task<ResultDto> CreateMeasurementAsync(MeasurementDto measurementDto);
+        Task<ResultDto> CreateMeasurementAsync(string measurementName);
 
         Task<ResultDto> UpdateMeasurementAsync(MeasurementDto measurementDto);
 

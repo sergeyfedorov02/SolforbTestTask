@@ -23,7 +23,7 @@ namespace SolforbTestTask.Client.Components
 
         private async Task OnSubmit()
         {                        
-            var result = await DirectoryService.CreateResourceAsync(model);
+            var result = await DirectoryService.CreateResourceAsync(model.Name);
 
             if (result.Success)
             {

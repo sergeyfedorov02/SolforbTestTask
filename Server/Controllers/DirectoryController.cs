@@ -28,9 +28,6 @@ namespace SolforbTestTask.Server.Controllers
         /// <param name="filterDirectoryDto"></param>
         /// <returns></returns>
         [HttpPost("getResource")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ResourceDto>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<GridResultDto<ResourceDto>>> GetResource(FilterDirectoryDto filterDirectoryDto)
         {
             var result = await _directoryService.GetResourceAsync(new Query
@@ -53,20 +50,17 @@ namespace SolforbTestTask.Server.Controllers
         /// <summary>
         /// Создание Resource
         /// </summary>
-        /// <param name="resourceDto"></param>
+        /// <param name="resourceName"></param>
         /// <returns></returns>
         [HttpPost("createResource")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResourceDto))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<bool>> CreateResource([FromBody] ResourceDto resourceDto)
+        public async Task<ActionResult> CreateResource([FromBody] string resourceName)
         {
-            if (string.IsNullOrWhiteSpace(resourceDto.Name))
+            if (string.IsNullOrWhiteSpace(resourceName))
             {
                 return BadRequest("Не указано наименование");
             }
 
-            var result = await _directoryService.CreateResourceAsync(resourceDto);
+            var result = await _directoryService.CreateResourceAsync(resourceName);
 
             if (!result.Success)
             {
@@ -74,7 +68,7 @@ namespace SolforbTestTask.Server.Controllers
                 return StatusCode(500, "Ошибка при создании Resource от Сервиса");
 
             }
-            return Ok(true);
+            return Ok();
         }
 
         /// <summary>
@@ -83,10 +77,7 @@ namespace SolforbTestTask.Server.Controllers
         /// <param name="resourceDto"></param>
         /// <returns></returns>
         [HttpPut("updateResource")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResourceDto))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<bool>> UpdateResource([FromBody] ResourceDto resourceDto)
+        public async Task<ActionResult> UpdateResource([FromBody] ResourceDto resourceDto)
         {
             if (string.IsNullOrWhiteSpace(resourceDto.Name))
             {
@@ -101,7 +92,7 @@ namespace SolforbTestTask.Server.Controllers
                 return StatusCode(500, "Ошибка при обновлении Resource от Сервиса");
             }
 
-            return Ok(true);
+            return Ok();
         }
 
         /// <summary>
@@ -110,7 +101,7 @@ namespace SolforbTestTask.Server.Controllers
         /// <param name="resourceDto"></param>
         /// <returns></returns>
         [HttpPost("archiveResource")]
-        public async Task<ActionResult<bool>> ArchiveResource([FromBody] ResourceDto resourceDto)
+        public async Task<ActionResult> ArchiveResource([FromBody] ResourceDto resourceDto)
         {
             var result = await _directoryService.ArchiveResourceAsync(resourceDto);
 
@@ -120,7 +111,7 @@ namespace SolforbTestTask.Server.Controllers
                 return BadRequest(result.Exception?.Message);
             }
 
-            return Ok(true);
+            return Ok();
         }
 
         /// <summary>
@@ -129,7 +120,7 @@ namespace SolforbTestTask.Server.Controllers
         /// <param name="resourceId"></param>
         /// <returns></returns>
         [HttpDelete("deleteResource/{resourceId}")]
-        public async Task<ActionResult<bool>> DeleteResource(long resourceId)
+        public async Task<ActionResult> DeleteResource(long resourceId)
         {
             var result = await _directoryService.DeleteResourceAsync(resourceId);
 
@@ -139,7 +130,7 @@ namespace SolforbTestTask.Server.Controllers
                 return BadRequest(result.Exception?.Message);
             }
 
-            return Ok(true);
+            return Ok();
         }
 
         /// <summary>
@@ -148,9 +139,6 @@ namespace SolforbTestTask.Server.Controllers
         /// <param name="filterDirectoryDto"></param>
         /// <returns></returns>
         [HttpPost("getMeasurement")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MeasurementDto>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<GridResultDto<MeasurementDto>>> GetMeasurement(FilterDirectoryDto filterDirectoryDto)
         {
             var result = await _directoryService.GetMeasurementAsync(new Query
@@ -173,20 +161,17 @@ namespace SolforbTestTask.Server.Controllers
         /// <summary>
         /// Создание Measurement
         /// </summary>
-        /// <param name="measurementDto"></param>
+        /// <param name="measurementName"></param>
         /// <returns></returns>
         [HttpPost("createMeasurement")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MeasurementDto))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<bool>> CreateMeasurement([FromBody] MeasurementDto measurementDto)
+        public async Task<ActionResult> CreateMeasurement([FromBody] string measurementName)
         {
-            if (string.IsNullOrWhiteSpace(measurementDto.Name))
+            if (string.IsNullOrWhiteSpace(measurementName))
             {
                 return BadRequest("Не указано наименование");
             }
 
-            var result = await _directoryService.CreateMeasurementAsync(measurementDto);
+            var result = await _directoryService.CreateMeasurementAsync(measurementName);
 
             if (!result.Success)
             {
@@ -194,7 +179,7 @@ namespace SolforbTestTask.Server.Controllers
                 return StatusCode(500, "Ошибка при создании Measurement от Сервиса");
 
             }
-            return Ok(true);
+            return Ok();
         }
 
         /// <summary>
@@ -203,10 +188,7 @@ namespace SolforbTestTask.Server.Controllers
         /// <param name="measurementDto"></param>
         /// <returns></returns>
         [HttpPut("updateMeasurement")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MeasurementDto))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<bool>> UpdateMeasurement([FromBody] MeasurementDto measurementDto)
+        public async Task<ActionResult> UpdateMeasurement([FromBody] MeasurementDto measurementDto)
         {
             if (string.IsNullOrWhiteSpace(measurementDto.Name))
             {
@@ -221,7 +203,7 @@ namespace SolforbTestTask.Server.Controllers
                 return StatusCode(500, "Ошибка при обновлении Measurement от Сервиса");
             }
 
-            return Ok(true);
+            return Ok();
         }
 
         /// <summary>
@@ -230,7 +212,7 @@ namespace SolforbTestTask.Server.Controllers
         /// <param name="measurementDto"></param>
         /// <returns></returns>
         [HttpPost("archiveMeasurement")]
-        public async Task<ActionResult<bool>> ArchiveMeasurement([FromBody] MeasurementDto measurementDto)
+        public async Task<ActionResult> ArchiveMeasurement([FromBody] MeasurementDto measurementDto)
         {
             var result = await _directoryService.ArchiveMeasurementAsync(measurementDto);
 
@@ -240,7 +222,7 @@ namespace SolforbTestTask.Server.Controllers
                 return BadRequest(result.Exception?.Message);
             }
 
-            return Ok(true);
+            return Ok();
         }
 
         /// <summary>
@@ -249,7 +231,7 @@ namespace SolforbTestTask.Server.Controllers
         /// <param name="measurementId"></param>
         /// <returns></returns>
         [HttpDelete("deleteMeasurement/{measurementId}")]
-        public async Task<ActionResult<bool>> DeleteMeasurement(long measurementId)
+        public async Task<ActionResult> DeleteMeasurement(long measurementId)
         {
             var result = await _directoryService.DeleteMeasurementAsync(measurementId);
 
@@ -259,7 +241,7 @@ namespace SolforbTestTask.Server.Controllers
                 return BadRequest(result.Exception?.Message);
             }
 
-            return Ok(true);
+            return Ok();
         }
     }
 }
